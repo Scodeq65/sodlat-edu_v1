@@ -9,7 +9,7 @@ def login():
     """Login route."""
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter((User.username == form.username_or_email.data) | 
+        user = User.query.filter((User.username == form.username_or_email.data) |
                                  (User.email == form.username_or_email.data)).first()
         if user and user.check_password(form.password.data):
             login_user(user)
@@ -30,8 +30,8 @@ def register():
         db.session.commit()
         flash('Your account has been created! You can now log in.', 'success')
         return redirect(url_for('main.login'))
-     return render_template('register.html', title='Register', form=form)
 
+    return render_template('register.html', title='Register', form=form)
 
 @bp.route('/logout')
 @login_required
