@@ -21,4 +21,8 @@ def create_app():
 
     from app.models import User  # Import after db initialization
 
+    @login.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
+    return app
