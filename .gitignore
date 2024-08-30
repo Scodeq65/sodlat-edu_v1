@@ -1,0 +1,49 @@
+# Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Virtual environment
+myenv/
+.env/
+
+# Flask application instance files
+instance/
+
+# Database files
+*.db
+*.sqlite3
+
+# Migrations directory
+migrations/
+
+# IDE/editor specific files
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment configuration files
+.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
