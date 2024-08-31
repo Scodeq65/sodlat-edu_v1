@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -14,7 +16,8 @@ class User(UserMixin, db.Model):
     courses = db.relationship('Course', backref='teacher', lazy=True)
     assignments = db.relationship('Assignment', backref='student', lazy=True)
     progress = db.relationship('Progress', backref='student', lazy=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Optional, for linking parents to students
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    children = db.relationship('User', backref='parent', remote_side=[id])
 
     def set_password(self, password):
         """Hashes and sets the user's password."""
@@ -24,12 +27,14 @@ class User(UserMixin, db.Model):
         """Checks if the provided password matches the stored hash."""
         return check_password_hash(self.password_hash, password)
 
+
 class Course(db.Model):
     """Model for courses."""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     assignments = db.relationship('Assignment', backref='course', lazy=True)
+
 
 class Assignment(db.Model):
     """Model for assignments."""
@@ -40,6 +45,7 @@ class Assignment(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+
 class Progress(db.Model):
     """Model for tracking student progress."""
     id = db.Column(db.Integer, primary_key=True)
@@ -48,5 +54,3 @@ class Progress(db.Model):
     grade = db.Column(db.String(10), nullable=False)
     attendance = db.Column(db.String(10), nullable=True)
     overall_performance = db.Column(db.String(100), nullable=True)
-    student = db.relationship('User', backref='progress')
-    course = db.relationship('Course', backref='progress')
