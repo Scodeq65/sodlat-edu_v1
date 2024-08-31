@@ -1,10 +1,11 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from app.db import db  # Import db from the new module
+from app.db import db
 
 migrate = Migrate()
 login = LoginManager()
+
 
 def create_app():
     app = Flask(__name__)
@@ -16,13 +17,14 @@ def create_app():
     login.login_view = 'auth.login'
 
     from app.routes import main, auth
-    app.register_blueprint(main.bp)
-    app.register_blueprint(auth.bp)
+    app.register_blueprint(main.bp, name='main')
+    app.register_blueprint(auth.bp, name='auth')
 
-    from app.models import User  # Import after db initialization
+    from app.models import User
 
     @login.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+
 
     return app
