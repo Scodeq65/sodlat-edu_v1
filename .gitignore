@@ -15,9 +15,6 @@ instance/
 *.db
 *.sqlite3
 
-# Migrations directory
-migrations/
-
 # IDE/editor specific files
 .vscode/
 *.sublime-workspace
@@ -47,3 +44,4 @@ htmlcov/
 .coverage
 .coverage.*
 
+my-secret_key
