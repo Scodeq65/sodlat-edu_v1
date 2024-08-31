@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from app.models import User, Course, Assignment
+from app.models import User, Course
 from datetime import datetime
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from wtforms_sqlalchemy.fields import QuerySelectField
+
 
 class LoginForm(FlaskForm):
     """Login form."""
