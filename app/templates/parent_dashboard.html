@@ -4,6 +4,31 @@
 
 {% block content %}
     <h2>Welcome, {{ current_user.username }}!</h2>
+    
+    <h3>Add a Child to Monitor</h3>
+    <form method="post">
+        <div>
+            <label for="student_name">Child's Name:</label>
+            <input type="text" id="student_name" name="student_name" required>
+        </div>
+        <div>
+            <label for="teacher_name">Teacher's Name:</label>
+            <input type="text" id="teacher_name" name="teacher_name" required>
+        </div>
+        <button type="submit">Add Child</button>
+    </form>
+
     <h3>Your Children's Progress</h3>
-    <p>Here you can view your children's assignments, grades, and communicate with their teachers.</p>
+    <ul>
+        {% for progress in progress %}
+            <li>
+                <strong>{{ progress.course.name }}</strong>: 
+                Grade: {{ progress.grade }}, 
+                Attendance: {{ progress.attendance }}, 
+                Performance: {{ progress.overall_performance }}
+            </li>
+        {% else %}
+            <li>No progress data available.</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

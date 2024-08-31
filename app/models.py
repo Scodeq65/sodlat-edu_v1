@@ -1,7 +1,8 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app.db import db  # Import db from the new module
+from app.db import db
+
 
 class User(UserMixin, db.Model):
     """Model for users."""
@@ -12,6 +13,8 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(64), nullable=False)
     courses = db.relationship('Course', backref='teacher', lazy=True)
     assignments = db.relationship('Assignment', backref='student', lazy=True)
+    progress = db.relationship('Progress', backref='student', lazy=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Optional, for linking parents to students
 
     def set_password(self, password):
         """Hashes and sets the user's password."""
@@ -36,3 +39,14 @@ class Assignment(db.Model):
     due_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+class Progress(db.Model):
+    """Model for tracking student progress."""
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    grade = db.Column(db.String(10), nullable=False)
+    attendance = db.Column(db.String(10), nullable=True)
+    overall_performance = db.Column(db.String(100), nullable=True)
+    student = db.relationship('User', backref='progress')
+    course = db.relationship('Course', backref='progress')
