@@ -1,121 +1,274 @@
 #!/usr/bin/python3
-from flask import render_template, redirect, url_for, flash, request
-from flask_login import login_required, current_user
-from app.routes import bp
-from app.forms import CourseForm, AssignmentForm, ProgressForm, UserForm
-from app.models import Course, Assignment, User, Progress
+"""
+Main route module for the SodLat Edu Solution project.
+"""
+
+from flask import (
+    Blueprint, render_template, url_for, flash, redirect, request
+)
+from flask_login import (
+    login_user, current_user, logout_user, login_required
+)
+from sqlalchemy.exc import SQLAlchemyError
 from app import db
+from app.forms import (
+    CourseForm, AssignmentForm, ProgressForm, UserForm, LoginForm, 
+    RegistrationForm, LinkParentForm
+)
+from app.models import User, Course, Assignment, Progress
+
+# Define the blueprint for the main routes
+bp = Blueprint('main', __name__)
 
 @bp.route('/')
 @bp.route('/index')
 def index():
-    """Homepage route."""
+    """
+    Homepage route.
+
+    Returns:
+        The rendered homepage template.
+    """
     return render_template('index.html', title='Home')
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    """
+    Login page route.
+
+    Handles user login and redirects to the appropriate page.
+    """
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter(
+            (User.username == form.username_or_email.data) |
+            (User.email == form.username_or_email.data)
+        ).first()
+        
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+        
+        flash('Login Unsuccessful. Please check username/email and password', 'danger')
+    
+    return render_template('login.html', title='Login', form=form)
+
+@bp.route('/register', methods=['GET', 'POST'])
+def register():
+    """
+    Registration page route.
+
+    Handles user registration and redirects to the login page.
+    """
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data, role=form.role.data)
+        user.set_password(form.password.data)
+        
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('Your account has been created! You are now able to log in', 'success')
+            return redirect(url_for('main.login'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while creating your account. Please try again.', 'danger')
+    
+    return render_template('register.html', title='Register', form=form)
 
 @bp.route('/dashboard')
 @login_required
 def dashboard():
-    """User dashboard route."""
-    if current_user.role == 'parent':
-        return redirect(url_for('main.parent_dashboard'))
-    elif current_user.role == 'teacher':
-        return redirect(url_for('main.teacher_dashboard'))
-    elif current_user.role == 'student':
-        return redirect(url_for('main.student_dashboard'))
-    else:
-        flash('Unauthorized access.')
+    """
+    User dashboard route.
+
+    Redirects the user to the appropriate dashboard based on their role.
+    """
+    try:
+        if current_user.role == 'parent':
+            return redirect(url_for('main.parent_dashboard'))
+        elif current_user.role == 'teacher':
+            return redirect(url_for('main.teacher_dashboard'))
+        elif current_user.role == 'student':
+            return redirect(url_for('main.student_dashboard'))
+        else:
+            flash('Unauthorized access!', 'danger')
+            return redirect(url_for('main.index'))
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash('An error occurred while processing your request.', 'danger')
         return redirect(url_for('main.index'))
 
 @bp.route('/parent_dashboard', methods=['GET', 'POST'])
 @login_required
 def parent_dashboard():
-    """Parent dashboard with functionalities."""
-    if request.method == 'POST':
-        student_name = request.form.get('student_name')
-        teacher_name = request.form.get('teacher_name')
-        student = User.query.filter_by(username=student_name).first()
-        teacher = User.query.filter_by(username=teacher_name).first()
+    """
+    Parent dashboard route.
 
-        if student and teacher:
-            # Link the student to the parent
-            if student.parent_id is None:
+    Allows parents to link their children to their accounts and view progress.
+    """
+    if current_user.role != 'parent':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('main.index'))
+
+    form = LinkParentForm()
+    if form.validate_on_submit():
+        try:
+            student = User.query.filter_by(username=form.student_name.data).first()
+            if student and student.parent_id is None:
                 student.parent_id = current_user.id
                 db.session.commit()
-                flash('Child added successfully.', 'success')
+                flash(f'Child {student.username} added successfully.', 'success')
+            elif student:
+                flash(f'Child {student.username} is already linked to another parent.', 'warning')
             else:
-                flash('Child is already linked to another parent.', 'warning')
-        else:
-            flash('Invalid student or teacher name.', 'danger')
+                flash('Student not found.', 'danger')
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while linking the child.', 'danger')
 
-    # Query to get the children’s progress
-    children_progress = Progress.query.filter_by(student_id=current_user.id).all()
-    
-    return render_template('parent_dashboard.html', title='Parent Dashboard', progress=children_progress)
+    try:
+        children_progress = Progress.query.filter_by(student_id=current_user.id).all()
+    except SQLAlchemyError:
+        db.session.rollback()
+        children_progress = []
+        flash('An error occurred while fetching progress data.', 'danger')
+
+    return render_template(
+        'parent_dashboard.html', 
+        title='Parent Dashboard', 
+        form=form, 
+        progress=children_progress
+    )
 
 @bp.route('/teacher_dashboard', methods=['GET', 'POST'])
 @login_required
 def teacher_dashboard():
-    """Teacher dashboard with functionalities."""
-    if request.method == 'POST':
-        action = request.form.get('action')
+    """
+    Teacher dashboard route.
 
-        if action == 'delete':
-            user_id = request.form.get('user_id')
-            user = User.query.get(user_id)
-            if user:
-                db.session.delete(user)
-                db.session.commit()
-                flash('User deleted successfully.', 'success')
-            else:
-                flash('User not found.', 'danger')
+    Allows teachers to manage user accounts and course-related activities.
+    """
+    if current_user.role != 'teacher':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('main.index'))
 
-        elif action == 'update':
-            user_id = request.form.get('user_id')
-            user = User.query.get(user_id)
-            if user:
-                user.username = request.form.get('username', user.username)
-                user.email = request.form.get('email', user.email)
-                user.role = request.form.get('role', user.role)
-                db.session.commit()
-                flash('User updated successfully.', 'success')
-            else:
-                flash('User not found.', 'danger')
+    course_form = CourseForm()
+    assignment_form = AssignmentForm()
+    user_form = UserForm()
 
-        elif action == 'create':
-            new_user = User(
-                username=request.form.get('username'),
-                email=request.form.get('email'),
-                role=request.form.get('role')
-            )
-            new_user.set_password(request.form.get('password'))
-            db.session.add(new_user)
+    if course_form.validate_on_submit():
+        course = Course(name=course_form.name.data, teacher_id=current_user.id)
+        try:
+            db.session.add(course)
             db.session.commit()
-            flash('User created successfully.', 'success')
+            flash('Course created successfully!', 'success')
+            return redirect(url_for('main.teacher_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while creating the course.', 'danger')
 
-    # Query to get the list of users
-    users = User.query.all()
-    
-    return render_template('teacher_dashboard.html', title='Teacher Dashboard', users=users)
+    if assignment_form.validate_on_submit():
+        assignment = Assignment(
+            title=assignment_form.title.data,
+            content=assignment_form.content.data,
+            due_date=assignment_form.due_date.data,
+            course_id=assignment_form.course_id.data.id,
+            student_id=current_user.id
+        )
+        try:
+            db.session.add(assignment)
+            db.session.commit()
+            flash('Assignment created successfully!', 'success')
+            return redirect(url_for('main.teacher_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while creating the assignment.', 'danger')
+
+    if user_form.validate_on_submit():
+        user = User(
+            username=user_form.username.data,
+            email=user_form.email.data,
+            role=user_form.role.data
+        )
+        user.set_password(user_form.password.data)
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('User created/updated successfully!', 'success')
+            return redirect(url_for('main.teacher_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while creating/updating the user.', 'danger')
+
+    return render_template(
+        'teacher_dashboard.html',
+        title='Teacher Dashboard',
+        course_form=course_form,
+        assignment_form=assignment_form,
+        user_form=user_form
+    )
 
 @bp.route('/student_dashboard', methods=['GET', 'POST'])
 @login_required
 def student_dashboard():
-    """Student dashboard with functionalities."""
-    if request.method == 'POST':
-        parent_name = request.form.get('parent_name')
-        parent_email = request.form.get('parent_email')
-        
-        parent = User.query.filter_by(username=parent_name, email=parent_email).first()
-        
-        if parent:
-            # Link the parent to the student
-            if current_user.parent_id is None:
-                current_user.parent_id = parent.id
+    """
+    Student dashboard route.
+
+    Allows students to link their parents to their accounts and update progress.
+    """
+    if current_user.role != 'student':
+        flash('Access denied.', 'danger')
+        return redirect(url_for('main.index'))
+
+    form = ProgressForm()
+    if form.validate_on_submit():
+        try:
+            student = User.query.filter_by(username=form.student_name.data).first()
+            course = Course.query.filter_by(name=form.teacher_name.data).first()
+            if student and course:
+                progress = Progress(
+                    student_id=student.id,
+                    course_id=course.id,
+                    grade=form.grade.data,
+                    attendance=form.attendance.data,
+                    overall_performance=form.overall_performance.data
+                )
+                db.session.add(progress)
                 db.session.commit()
-                flash('Parent added successfully.', 'success')
+                flash('Progress updated successfully!', 'success')
             else:
-                flash('Student already has a parent linked.', 'warning')
-        else:
-            flash('Invalid parent details.', 'danger')
-    
-    return render_template('student_dashboard.html', title='Student Dashboard')
+                flash('Student or Course not found.', 'danger')
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while updating progress.', 'danger')
+
+    return render_template(
+        'student_dashboard.html', 
+        title='Student Dashboard', 
+        form=form
+    )
+
+@bp.route('/logout')
+def logout():
+    """
+    Logout route.
+
+    Logs out the user and redirects to the homepage.
+    """
+    logout_user()
+    return redirect(url_for('main.index'))
+
+
+# Custom 403 error handler
+@bp.app_errorhandler(403)
+def forbidden_error(error):
+    """Custom handler for 403 Forbidden errors."""
+    return render_template('403.html', title='Forbidden'), 403
