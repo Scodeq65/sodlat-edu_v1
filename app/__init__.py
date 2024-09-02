@@ -16,9 +16,11 @@ def create_app():
     login.init_app(app)
     login.login_view = 'auth.login'
 
-    from app.routes import main, auth
-    app.register_blueprint(main.bp, url_prefix='/main')
-    app.register_blueprint(auth.bp, url_prefix='/auth')
+    from app.routes import main as main_bp
+    from app.routes.auth import auth as auth_bp
+
+    app.register_blueprint(main_bp, url_prefix='/')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
     from app.models import User
 

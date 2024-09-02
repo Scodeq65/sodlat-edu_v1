@@ -18,7 +18,7 @@ from app.forms import (
 from app.models import User, Course, Assignment, Progress
 
 # Define the blueprint for the main routes
-bp = Blueprint('main', __name__)
+bp = Blueprint('main_bp', __name__)
 
 @bp.route('/')
 @bp.route('/index')
