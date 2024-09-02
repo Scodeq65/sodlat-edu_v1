@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SodLat Edu Solution{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="author" content="Sodiq Agbaraojo">
 </head>
 <body>
     <header>
         <nav>
             <ul>
-                <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                <li><a href="{{ url_for('main_bp.index') }}">Home</a></li>
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+                    <li><a href="{{ url_for('main_bp.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('main_bp.logout') }}">Logout</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('main.login') }}">Login</a></li>
-                    <li><a href="{{ url_for('main.register') }}">Register</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -27,7 +29,9 @@
     </main>
 
     <footer>
+        {% block footer %}
         <p>&copy; 2024 SodLat Edu Solution. All rights reserved.</p>
+        {% endblock %}
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

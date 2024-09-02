@@ -1,32 +1,25 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ current_user.username }}!</h2>
-    
-    <h3>Add Your Parent's Details</h3>
-    <form method="post">
-        <div>
-            <label for="parent_name">Parent's Name:</label>
-            <input type="text" id="parent_name" name="parent_name" required>
-        </div>
-        <div>
-            <label for="parent_email">Parent's Email:</label>
-            <input type="email" id="parent_email" name="parent_email" required>
-        </div>
-        <button type="submit">Add Parent</button>
-    </form>
+<p>Welcome { { current_user.username } }! </p>
+<h1>Student Dashboard</h1>
+<h2>Assignments</h2>
+<ul>
+    {% for assignment in assignments %}
+    <li>{{ assignment.title }} - Due: {{ assignment.due_date }}</li>
+    {% else %}
+    <li>No assignments found.</li>
+    {% endfor %}
+</ul>
 
-    <h3>Your Assignments</h3>
-    <!-- Add code to list assignments if available -->
-    <ul>
-        {% for assignment in assignments %}
-            <li>
-                <strong>{{ assignment.title }}</strong>: Due {{ assignment.due_date.strftime('%Y-%m-%d') }}
-            </li>
-        {% else %}
-            <li>No assignments available.</li>
-        {% endfor %}
-    </ul>
+<h2>Progress</h2>
+<ul>
+    {% for progress in progress %}
+    <li>{{ progress.course.name }} - {{ progress.grade }}</li>
+    {% else %}
+    <li>No progress data available.</li>
+    {% endfor %}
+</ul>
 {% endblock %}

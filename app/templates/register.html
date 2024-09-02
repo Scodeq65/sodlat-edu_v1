@@ -1,32 +1,42 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Register{% endblock %}
 
 {% block content %}
-    <h2>Register</h2>
-    <form method="POST" action="{{ url_for('main.register') }}">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-        </p>
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=32) }}<br>
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-        </p>
-        <p>
-            {{ form.confirm_password.label }}<br>
-            {{ form.confirm_password(size=32) }}<br>
-        </p>
-        <p>
-            {{ form.role.label }}<br>
-            {{ form.role() }}<br>
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
-    <p>Already have an account? <a href="{{ url_for('main.login') }}">Login here</a>.</p>
+<h1>Register</h1>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.username.label }}
+        {{ form.username() }}
+        {% for error in form.username.errors %}
+        <span class="error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.email.label }}
+        {{ form.email() }}
+        {% for error in form.email.errors %}
+        <span class="error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.password.label }}
+        {{ form.password() }}
+        {% for error in form.password.errors %}
+        <span class="error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.role.label }}
+        {{ form.role() }}
+        {% for error in form.role.errors %}
+        <span class="error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>
+<p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
 {% endblock %}

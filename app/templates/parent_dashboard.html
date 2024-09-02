@@ -1,34 +1,28 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Parent Dashboard{% endblock %}
 
 {% block content %}
-    <h2>Welcome, {{ current_user.username }}!</h2>
-    
-    <h3>Add a Child to Monitor</h3>
-    <form method="post">
-        <div>
-            <label for="student_name">Child's Name:</label>
-            <input type="text" id="student_name" name="student_name" required>
-        </div>
-        <div>
-            <label for="teacher_name">Teacher's Name:</label>
-            <input type="text" id="teacher_name" name="teacher_name" required>
-        </div>
-        <button type="submit">Add Child</button>
-    </form>
-
-    <h3>Your Children's Progress</h3>
-    <ul>
-        {% for progress in progress %}
-            <li>
-                <strong>{{ progress.course.name }}</strong>: 
-                Grade: {{ progress.grade }}, 
-                Attendance: {{ progress.attendance }}, 
-                Performance: {{ progress.overall_performance }}
-            </li>
-        {% else %}
-            <li>No progress data available.</li>
+<h1>Parent Dashboard</h1>
+<p>Welcome { { current_user.username } }!</p>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.parent_name.label }}
+        {{ form.parent_name() }}
+        {% for error in form.parent_name.errors %}
+        <span class="error">{{ error }}</span>
         {% endfor %}
-    </ul>
+    </div>
+    <button type="submit">Link Parent</button>
+</form>
+
+<h2>Children's Progress</h2>
+<ul>
+    {% for child in children %}
+    <li>{{ child.username }}</li>
+    {% else %}
+    <li>No children linked yet.</li>
+    {% endfor %}
+</ul>
 {% endblock %}
