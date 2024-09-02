@@ -16,8 +16,8 @@ def create_app():
     login.init_app(app)
     login.login_view = 'auth.login'
 
-    from app.routes import main as main_bp
-    from app.routes.auth import auth as auth_bp
+    from app.routes.main import main_bp
+    from app.routes.auth import auth_bp
 
     app.register_blueprint(main_bp, url_prefix='/')
     app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -26,6 +26,7 @@ def create_app():
 
     @login.user_loader
     def load_user(user_id):
+        """Load user by ID."""
         return User.query.get(int(user_id))
 
 

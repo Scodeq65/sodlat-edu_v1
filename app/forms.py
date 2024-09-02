@@ -10,12 +10,14 @@ from app.models import User, Course
 from datetime import datetime
 from wtforms_sqlalchemy.fields import QuerySelectField
 
+
 class LoginForm(FlaskForm):
     """Login form."""
     username_or_email = StringField('Username or Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
 
 class RegistrationForm(FlaskForm):
     """Registration form."""
