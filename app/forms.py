@@ -4,9 +4,10 @@ Forms module for handling user input in the SodLat Edu Solution project.
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, IntegerField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from app.models import User, Course
+from pytz import utc
 from datetime import datetime
 from wtforms_sqlalchemy.fields import QuerySelectField
 
@@ -41,12 +42,13 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('Email is already registered.')
 
+
 class UserForm(FlaskForm):
     """Form for creating or updating users."""
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     role = SelectField('Role', choices=[('parent', 'Parent'), ('teacher', 'Teacher'), ('student', 'Student')], validators=[DataRequired()])
-    password = PasswordField('Password')
+    password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[
         EqualTo('password', message='Passwords must match.')])
     submit = SubmitField('Submit')
@@ -63,10 +65,12 @@ class UserForm(FlaskForm):
         if user:
             raise ValidationError('Email is already registered.')
 
+
 class CourseForm(FlaskForm):
     """Form for creating or updating courses."""
     name = StringField('Course Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
 
 class AssignmentForm(FlaskForm):
     """Form for creating or updating assignments."""
@@ -78,7 +82,7 @@ class AssignmentForm(FlaskForm):
 
     def validate_due_date(self, due_date):
         """Validate that the due date is not in the past."""
-        if due_date.data < datetime.utcnow():
+        if due_date.data < datetime.utcnow().replace(tzinfo=utc):
             raise ValidationError('Due date cannot be in the past.')
 
 class LinkParentForm(FlaskForm):
@@ -92,12 +96,16 @@ class LinkParentForm(FlaskForm):
         parent = User.query.filter_by(username=parent_name.data).first()
         if not parent:
             raise ValidationError('No matching parent found.')
+        elif parent.email != self.parent_email.data:
+            raise ValidationError('Parent email does not match.')
 
     def validate_parent_email(self, parent_email):
         """Validate that the parent email exists."""
         parent = User.query.filter_by(email=parent_email.data).first()
         if not parent:
             raise ValidationError('No matching parent found.')
+        elif parent.username != self.parent_name.data:
+            raise ValidationError('Parent username does not match.')
 
 class ProgressForm(FlaskForm):
     """Form for tracking student progress."""

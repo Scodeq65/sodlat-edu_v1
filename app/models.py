@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.db import db
 
+
 class User(UserMixin, db.Model):
     """Model for users."""
     id = db.Column(db.Integer, primary_key=True)

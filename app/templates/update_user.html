@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Update User{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Update User Details</h2>
+    <form method="POST" action="{{ url_for('main.update_user', user_id=user.id) }}">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username(class="form-control", placeholder="Enter username") }}
+            {% for error in form.username.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", placeholder="Enter email") }}
+            {% for error in form.email.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.role.label }}
+            {{ form.role(class="form-control") }}
+            {% for error in form.role.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password(class="form-control", placeholder="Enter new password") }}
+            {% for error in form.password.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+            <small class="form-text text-muted">Leave blank if you do not wish to change the password.</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password(class="form-control", placeholder="Confirm new password") }}
+            {% for error in form.confirm_password.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+        <a href="{{ url_for('main.teacher_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

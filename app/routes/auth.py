@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from flask import Blueprint
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, db
 
-auth_bp = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__)
 
-
-@auth_bp.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     """
     Login route.
@@ -25,14 +24,22 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             flash(f'Welcome, {user.username}!', 'success')
-            next_page = url_for('main.dashboard')
-            return redirect(next_page)
+
+            # Redirect based on user role
+            if user.role == 'Parent':
+                return redirect(url_for('parent.dashboard'))
+            elif user.role == 'Teacher':
+                return redirect(url_for('teacher.dashboard'))
+            elif user.role == 'Student':
+                return redirect(url_for('student.dashboard'))
+            else:
+                return redirect(url_for('main.index'))
+
         else:
             flash('Invalid username/email or password.', 'danger')
     return render_template('login.html', title='Login', form=form)
 
-
-@auth_bp.route('/register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     """
     Registration route.
@@ -41,6 +48,10 @@ def register():
     """
     form = RegistrationForm()
     if form.validate_on_submit():
+        if form.password.data != form.confirm_password.data:
+            flash('Passwords do not match!', 'danger')
+            return redirect(url_for('auth.register'))
+
         user = User(
             username=form.username.data,
             email=form.email.data,
@@ -57,8 +68,7 @@ def register():
             flash('An error occurred while creating your account. Please try again.', 'danger')
     return render_template('register.html', title='Register', form=form)
 
-
-@auth_bp.route('/logout')
+@auth.route('/logout')
 @login_required
 def logout():
     """

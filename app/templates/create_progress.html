@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Record Student Progress{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Record Student Progress</h2>
+    <form method="POST" action="{{ url_for('main.create_progress') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.student_name.label }}
+            {{ form.student_name(class="form-control", placeholder="Enter student username") }}
+            {% for error in form.student_name.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.teacher_name.label }}
+            {{ form.teacher_name(class="form-control", placeholder="Enter teacher username") }}
+            {% for error in form.teacher_name.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.grade.label }}
+            {{ form.grade(class="form-control", placeholder="Enter grade (e.g., A+, B)") }}
+            {% for error in form.grade.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.attendance.label }}
+            {{ form.attendance(class="form-control", placeholder="Enter attendance percentage") }}
+            {% for error in form.attendance.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.overall_performance.label }}
+            {{ form.overall_performance(class="form-control", rows="5", placeholder="Enter overall performance remarks") }}
+            {% for error in form.overall_performance.errors %}
+                <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+        <a href="{{ url_for('main.teacher_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
