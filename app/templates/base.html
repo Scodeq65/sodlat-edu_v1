@@ -16,8 +16,8 @@
                     <li><a href="{{ url_for('main_bp.dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ url_for('main_bp.logout') }}">Logout</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                    <li><a href="{{ url_for('auth_bp.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth_bp.register') }}">Register</a></li>
                 {% endif %}
             </ul>
         </nav>
