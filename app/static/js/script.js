@@ -1,43 +1,66 @@
+// script.js
+
+// Form validation example
 document.addEventListener('DOMContentLoaded', function () {
-    // Smooth scroll for anchors
-    const anchors = document.querySelectorAll('a[href^="#"]');
-    for (let anchor of anchors) {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    }
-
-    // Mobile menu toggle
-    const navToggle = document.querySelector('.nav-toggle');
-    const navMenu = document.querySelector('nav ul');
-    
-    if (navToggle) {
-        navToggle.addEventListener('click', function () {
-            navMenu.classList.toggle('nav-menu-visible');
-        });
-    }
-});
-
-// Simple form validation
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function (e) {
-        const requiredFields = this.querySelectorAll('[required]');
-        let valid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                valid = false;
-                field.classList.add('error');
-            } else {
-                field.classList.remove('error');
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            const isValid = validateForm(form);
+            if (!isValid) {
+                event.preventDefault();
+                alert('Please fill out all required fields.');
             }
         });
+    });
+});
 
-        if (!valid) {
-            e.preventDefault();
+function validateForm(form) {
+    // Simple validation logic
+    let isValid = true;
+    form.querySelectorAll('input[required]').forEach(input => {
+        if (!input.value) {
+            isValid = false;
+            input.classList.add('error');
+        } else {
+            input.classList.remove('error');
         }
+    });
+    return isValid;
+}
+
+// Dynamic content update example
+function updateContent(data) {
+    const contentArea = document.querySelector('#content-area');
+    contentArea.innerHTML = data;  // Replace with dynamic content
+}
+
+// AJAX request example
+function fetchData(url) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => updateContent(data))
+        .catch(error => console.error('Error:', error));
+}
+
+// Interactive dashboard features example
+document.querySelector('#dashboard-toggle').addEventListener('click', function () {
+    document.querySelector('#dashboard-content').classList.toggle('hidden');
+});
+
+// Real-time notifications example
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
+
+// Enhanced UI example
+document.querySelectorAll('.interactive-element').forEach(element => {
+    element.addEventListener('mouseover', function () {
+        this.classList.add('hover');
+    });
+    element.addEventListener('mouseout', function () {
+        this.classList.remove('hover');
     });
 });

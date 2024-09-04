@@ -3,23 +3,30 @@
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-<p>Welcome, {{ current_user.username }}! </p>
 <h1>Student Dashboard</h1>
-<h2>Assignments</h2>
-<ul>
-    {% for assignment in assignments %}
-    <li>{{ assignment.title }} - Due: {{ assignment.due_date }}</li>
-    {% else %}
-    <li>No assignments found.</li>
-    {% endfor %}
-</ul>
+<p>Welcome, {{ current_user.username }}!</p>
 
-<h2>Progress</h2>
-<ul>
-    {% for progress in progress %}
-    <li>{{ progress.course.name }} - {{ progress.grade }}</li>
-    {% else %}
-    <li>No progress data available.</li>
-    {% endfor %}
-</ul>
+<!-- Assignments -->
+<h2>Your Assignments</h2>
+{% if current_user.assignments %}
+    <ul>
+        {% for assignment in current_user.assignments %}
+            <li>{{ assignment.title }} - Due: {{ assignment.due_date.strftime('%Y-%m-%d') }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No assignments found.</p>
+{% endif %}
+
+<!-- Progress -->
+<h2>Your Progress</h2>
+{% if current_user.progress %}
+    <ul>
+        {% for progress in current_user.progress %}
+            <li>Course: {{ progress.course_name }}, Grade: {{ progress.grade }}, Attendance: {{ progress.attendance }}, Performance: {{ progress.overall_performance }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No progress data available.</p>
+{% endif %}
 {% endblock %}

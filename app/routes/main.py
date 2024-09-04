@@ -84,7 +84,7 @@ def parent_dashboard():
             flash('An error occurred while linking the parent.', 'danger')
             print(f"Error: {e}")
 
-    # Fetch children and their progress
+    """ Fetch children and their progress."""
     children = User.query.filter_by(parent_id=current_user.id).all()
     progress = {child.id: Progress.query.filter_by(student_id=child.id).all() for child in children}
     return render_template(
@@ -100,13 +100,97 @@ def parent_dashboard():
 @login_required
 @roles_required('teacher')
 def teacher_dashboard():
+    assignment_form = AssignmentForm()
+    course_form = CourseForm()
+    progress_form = ProgressForm()
+    user_form = UserForm()
+
+    # Handle course creation
+    if course_form.validate_on_submit():
+        try:
+            new_course = Course(name=course_form.name.data, teacher_id=current_user.id)
+            db.session.add(new_course)
+            db.session.commit()
+            flash('Course created successfully.', 'success')
+            return redirect(url_for('main.teacher_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while creating the course.', 'danger')
+
+    # Handle assignment creation
+    if assignment_form.validate_on_submit():
+        try:
+            new_assignment = Assignment(
+                title=assignment_form.title.data,
+                content=assignment_form.content.data,
+                due_date=assignment_form.due_date.data,
+                course_id=assignment_form.course_id.data.id,  # Ensure this is set correctly
+                student_id=None
+            )
+            db.session.add(new_assignment)
+            db.session.commit()
+            flash('Assignment created successfully.', 'success')
+            return redirect(url_for('main.teacher_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while creating the assignment.', 'danger')
+
+    # Handle progress creation
+    if progress_form.validate_on_submit():
+        student = User.query.filter_by(username=progress_form.student_name.data).first()
+        course = Course.query.filter_by(name=progress_form.teacher_name.data).first()
+        if student and course:
+            try:
+                new_progress = Progress(
+                    student_id=student.id,
+                    course_id=course.id,
+                    grade=progress_form.grade.data,
+                    attendance=progress_form.attendance.data,
+                    overall_performance=progress_form.overall_performance.data
+                )
+                db.session.add(new_progress)
+                db.session.commit()
+                flash('Progress recorded successfully.', 'success')
+                return redirect(url_for('main.teacher_dashboard'))
+            except SQLAlchemyError:
+                db.session.rollback()
+                flash('An error occurred while recording progress.', 'danger')
+        else:
+            flash('Student or course not found.', 'danger')
+
+    # Handle user updates
+    if user_form.validate_on_submit():
+        user = User.query.get(user_form.id.data)
+        if user:
+            user.username = user_form.username.data
+            user.email = user_form.email.data
+            if user_form.password.data:
+                user.set_password(user_form.password.data)
+            user.role = user_form.role.data
+            try:
+                db.session.commit()
+                flash('User updated successfully.', 'success')
+                return redirect(url_for('main.teacher_dashboard'))
+            except SQLAlchemyError:
+                db.session.rollback()
+                flash('An error occurred while updating the user.', 'danger')
+        else:
+            flash('User not found.', 'danger')
+
+    # Retrieve courses and users
     courses = Course.query.filter_by(teacher_id=current_user.id).all()
+    users = User.query.all()  # Adjust if you only want to display certain users
+
     return render_template(
         'teacher_dashboard.html',
         title='Teacher Dashboard',
-        courses=courses
+        courses=courses,
+        assignment_form=assignment_form,
+        course_form=course_form,
+        progress_form=progress_form,
+        user_form=user_form,  # Pass UserForm to template
+        users=users  # Provide user data to the template if needed
     )
-
 
 @main.route('/student_dashboard', methods=['GET', 'POST'])
 @login_required
@@ -120,98 +204,3 @@ def student_dashboard():
         assignments=assignments,
         progress=progress
     )
-
-
-@main.route('/create_course', methods=['GET', 'POST'])
-@login_required
-@roles_required('teacher')
-def create_course():
-    form = CourseForm()
-    if form.validate_on_submit():
-        course = Course(
-            name=form.name.data,
-            teacher_id=current_user.id
-        )
-        try:
-            db.session.add(course)
-            db.session.commit()
-            flash('Course created successfully.', 'success')
-            return redirect(url_for('main.teacher_dashboard'))
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash('An error occurred while creating the course.', 'danger')
-    return render_template('create_course.html', title='Create Course', form=form)
-
-
-@main.route('/create_assignment', methods=['GET', 'POST'])
-@login_required
-@roles_required('teacher')
-def create_assignment():
-    form = AssignmentForm()
-    if form.validate_on_submit():
-        assignment = Assignment(
-            title=form.title.data,
-            content=form.content.data,
-            due_date=form.due_date.data,
-            course_id=form.course_id.data.id,
-            student_id=current_user.id
-        )
-        try:
-            db.session.add(assignment)
-            db.session.commit()
-            flash('Assignment created successfully.', 'success')
-            return redirect(url_for('main.teacher_dashboard'))
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash('An error occurred while creating the assignment.', 'danger')
-    return render_template('create_assignment.html', title='Create Assignment', form=form)
-
-
-@main.route('/create_progress', methods=['GET', 'POST'])
-@login_required
-@roles_required('teacher')
-def create_progress():
-    form = ProgressForm()
-    if form.validate_on_submit():
-        student = User.query.filter_by(username=form.student_name.data).first()
-        course = Course.query.filter_by(name=form.teacher_name.data).first()
-        if student and course:
-            progress = Progress(
-                student_id=student.id,
-                course_id=course.id,
-                grade=form.grade.data,
-                attendance=form.attendance.data,
-                overall_performance=form.overall_performance.data
-            )
-            try:
-                db.session.add(progress)
-                db.session.commit()
-                flash('Progress recorded successfully.', 'success')
-                return redirect(url_for('main.teacher_dashboard'))
-            except SQLAlchemyError:
-                db.session.rollback()
-                flash('An error occurred while recording progress.', 'danger')
-        else:
-            flash('Student or course not found.', 'danger')
-    return render_template('create_progress.html', title='Record Progress', form=form)
-
-@main.route('/update_user/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-@roles_required('teacher')
-def update_user(user_id):
-    user = User.query.get_or_404(user_id)
-    form = UserForm(obj=user)
-    if form.validate_on_submit():
-        user.username = form.username.data
-        user.email = form.email.data
-        if form.password.data:
-            user.set_password(form.password.data)
-        user.role = form.role.data
-        try:
-            db.session.commit()
-            flash('User updated successfully.', 'success')
-            return redirect(url_for('main.teacher_dashboard'))
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash('An error occurred while updating the user.', 'danger')
-    return render_template('update_user.html', title='Update User', form=form, user=user)

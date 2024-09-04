@@ -6,33 +6,46 @@
 <h1>Parent Dashboard</h1>
 <p>Welcome, {{ current_user.username }}!</p>
 
-<!-- Form to link student -->
-<h2>Link Your Children</h2>
-<form method="post">
-    {{ form.hidden_tag() }}
+<!-- Link Child Form -->
+<h2>Link Your Child</h2>
+<form method="POST" action="{{ url_for('main.parent_dashboard') }}">
+    {{ link_child_form.hidden_tag() }}
     <div>
-        {{ form.student_username.label }}
-        {{ form.student_username() }}
-        {% for error in form.student_username.errors %}
-        <span class="error">{{ error }}</span>
+        {{ link_child_form.child_name.label(class="form-label") }}<br>
+        {{ link_child_form.child_name(class="form-control") }}<br>
+        {% for error in link_child_form.child_name.errors %}
+            <span class="error">{{ error }}</span><br>
         {% endfor %}
     </div>
     <div>
-	{{ form.student_email.label }}
-	{{ form.student_email() }}
-	{% for error in form.student_email.errors %}
-	<span class="error">{{ error }}</span>
-	{% endfor %}
+        <input type="submit" value="Link Child" class="btn btn-primary">
     </div>
-    <button type="submit">Link Student</button>
 </form>
 
-<h2>Children's Progress</h2>
+<!-- Linked Children List -->
+<h2>Your Linked Children</h2>
 <ul>
-    {% for child in children %}
-    <li>{{ child.username }}</li>
-    {% else %}
-    <li>No children linked yet.</li>
+    {% for child in current_user.children %}
+        <li>{{ child.name }}</li>
     {% endfor %}
 </ul>
+
+<!-- Child's Progress -->
+<h2>Child's Progress</h2>
+{% if current_user.children %}
+    {% for child in current_user.children %}
+        <h3>{{ child.name }}</h3>
+        {% if child.progress %}
+            <ul>
+                {% for progress in child.progress %}
+                    <li>Course: {{ progress.course_name }}, Grade: {{ progress.grade }}, Attendance: {{ progress.attendance }}, Performance: {{ progress.overall_performance }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No progress data available.</p>
+        {% endfor %}
+    {% endfor %}
+{% else %}
+    <p>No children linked yet.</p>
+{% endif %}
 {% endblock %}
