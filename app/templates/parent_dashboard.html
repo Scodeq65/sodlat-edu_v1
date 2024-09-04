@@ -4,7 +4,10 @@
 
 {% block content %}
 <h1>Parent Dashboard</h1>
-<p>Welcome, { { current_user.username } }!</p>
+<p>Welcome, {{ current_user.username }}!</p>
+
+<!-- Form to link student -->
+<h2>Link Your Children</h2>
 <form method="post">
     {{ form.hidden_tag() }}
     <div>
@@ -14,7 +17,7 @@
         <span class="error">{{ error }}</span>
         {% endfor %}
     </div>
-    <button type="submit">Link Parent</button>
+    <button type="submit">Link Student</button>
 </form>
 
 <h2>Children's Progress</h2>

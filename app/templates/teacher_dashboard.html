@@ -5,7 +5,7 @@
 {% block content %}
 <h1>Teacher Dashboard</h1>
 <h2>My Courses</h2>
-<p>Welcome, { { current_user.username } }! </p>
+<p>Welcome, {{ current_user.username }}! </p>
 <ul>
     {% for course in courses %}
     <li>{{ course.name }}</li>

@@ -87,25 +87,26 @@ class AssignmentForm(FlaskForm):
 
 class LinkParentForm(FlaskForm):
     """Form for linking a student to a parent."""
-    parent_name = StringField('Parent Username', validators=[DataRequired()])
-    parent_email = StringField('Parent Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Link Parent')
+    student_username = StringField('Student Username', validators=[DataRequired()])
+    student_email = StringField('Student Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Link Student')
 
-    def validate_parent_name(self, parent_name):
+    def validate_student_name(self, student_username):
         """Validate that the parent username exists."""
-        parent = User.query.filter_by(username=parent_name.data).first()
-        if not parent:
-            raise ValidationError('No matching parent found.')
-        elif parent.email != self.parent_email.data:
-            raise ValidationError('Parent email does not match.')
+        student = User.query.filter_by(username=student_username.data).first()
+        if not student:
+            raise ValidationError('No matching student found')
+        elif student.email != self.student_email.data:
+            raise ValidationError('Student email does not match.')
+        
+    def validate_student_email(self, student_email):
+        """Validate that the student email exists."""
+        student = User.query.filter_by(email=student_email.data).first()
+        if not student:
+            raise ValidationError('No matching student found')
+        elif student.username != self.student_username.data:
+            raise ValidationError('Student username does not match.')
 
-    def validate_parent_email(self, parent_email):
-        """Validate that the parent email exists."""
-        parent = User.query.filter_by(email=parent_email.data).first()
-        if not parent:
-            raise ValidationError('No matching parent found.')
-        elif parent.username != self.parent_name.data:
-            raise ValidationError('Parent username does not match.')
 
 class ProgressForm(FlaskForm):
     """Form for tracking student progress."""
