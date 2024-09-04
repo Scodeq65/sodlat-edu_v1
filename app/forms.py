@@ -121,3 +121,9 @@ class ProgressForm(FlaskForm):
         student = User.query.filter_by(username=student_name.data).first()
         if not student:
             raise ValidationError('No matching student found.')
+        
+    def validate_teacher_name(self, teacher_name):
+        """Validate that the teacher username exists."""
+        teacher = User.query.filter_by(username=teacher_name.data).first()
+        if not teacher:
+            raise ValidationError('No matching teacher found.')

@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Parent Dashboard</h1>
-<p>Welcome { { current_user.username } }!</p>
+<p>Welcome, { { current_user.username } }!</p>
 <form method="post">
     {{ form.hidden_tag() }}
     <div>

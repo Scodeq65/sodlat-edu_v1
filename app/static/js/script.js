@@ -1,28 +1,43 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Bootstrap modals
-    var modals = document.querySelectorAll('.modal');
-    modals.forEach(function(modal) {
-        new bootstrap.Modal(modal);
-    });
-
-    // Example of handling form submissions
-    var forms = document.querySelectorAll('form');
-    forms.forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            // You can add validation or other logic here
-            console.log('Form submitted: ', form);
-        });
-    });
-
-    // Example of adding dynamic behavior
-    var addButton = document.querySelector('#add-button');
-    if (addButton) {
-        addButton.addEventListener('click', function() {
-            // Example functionality for adding an item dynamically
-            var container = document.querySelector('#dynamic-container');
-            var newItem = document.createElement('div');
-            newItem.textContent = 'New item added';
-            container.appendChild(newItem);
+document.addEventListener('DOMContentLoaded', function () {
+    // Smooth scroll for anchors
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    for (let anchor of anchors) {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
         });
     }
+
+    // Mobile menu toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('nav ul');
+    
+    if (navToggle) {
+        navToggle.addEventListener('click', function () {
+            navMenu.classList.toggle('nav-menu-visible');
+        });
+    }
+});
+
+// Simple form validation
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function (e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let valid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                valid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
 });

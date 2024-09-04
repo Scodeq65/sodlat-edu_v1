@@ -27,11 +27,11 @@ def login():
 
             # Redirect based on user role
             if user.role == 'Parent':
-                return redirect(url_for('parent.dashboard'))
+                return redirect(url_for('main.parent_dashboard'))
             elif user.role == 'Teacher':
-                return redirect(url_for('teacher.dashboard'))
+                return redirect(url_for('main.teacher_dashboard'))
             elif user.role == 'Student':
-                return redirect(url_for('student.dashboard'))
+                return redirect(url_for('main.student_dashboard'))
             else:
                 return redirect(url_for('main.index'))
 
