@@ -179,7 +179,7 @@ def teacher_dashboard():
 
     # Retrieve courses and users
     courses = Course.query.filter_by(teacher_id=current_user.id).all()
-    users = User.query.all()  # Adjust if you only want to display certain users
+    users = User.query.all()
 
     return render_template(
         'teacher_dashboard.html',

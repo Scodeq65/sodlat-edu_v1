@@ -108,23 +108,23 @@
 <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
     {{ update_user_form.hidden_tag() }}
     <div>
-        {{ update_user_form.username.label(class="form-label") }}<br>
-        {{ update_user_form.username(class="form-control") }}<br>
-        {% for error in update_user_form.username.errors %}
+        {{ user_form.username.label(class="form-label") }}<br>
+        {{ user_form.username(class="form-control") }}<br>
+        {% for error in user_form.username.errors %}
             <span class="error">{{ error }}</span><br>
         {% endfor %}
     </div>
     <div>
-        {{ update_user_form.email.label(class="form-label") }}<br>
-        {{ update_user_form.email(class="form-control") }}<br>
-        {% for error in update_user_form.email.errors %}
+        {{ user_form.email.label(class="form-label") }}<br>
+        {{ user_form.email(class="form-control") }}<br>
+        {% for error in user_form.email.errors %}
             <span class="error">{{ error }}</span><br>
         {% endfor %}
     </div>
     <div>
-        {{ update_user_form.password.label(class="form-label") }}<br>
-        {{ update_user_form.password(class="form-control") }}<br>
-        {% for error in update_user_form.password.errors %}
+        {{ user_form.password.label(class="form-label") }}<br>
+        {{ user_form.password(class="form-control") }}<br>
+        {% for error in user_form.password.errors %}
             <span class="error">{{ error }}</span><br>
         {% endfor %}
     </div>
