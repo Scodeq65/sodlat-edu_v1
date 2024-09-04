@@ -71,7 +71,7 @@ def parent_dashboard():
     form = LinkParentForm()
     if form.validate_on_submit():
         try:
-            student = User.query.filter_by(username=form.parent_name.data).first()
+            student = User.query.filter_by(username=form.student_username.data).first()
             if student and student.parent_id is None:
                 student.parent_id = current_user.id
                 db.session.commit()
@@ -82,6 +82,7 @@ def parent_dashboard():
         except SQLAlchemyError:
             db.session.rollback()
             flash('An error occurred while linking the parent.', 'danger')
+            print(f"Error: {e}")
 
     children = User.query.filter_by(parent_id=current_user.id).all()
     return render_template(

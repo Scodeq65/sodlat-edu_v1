@@ -11,11 +11,18 @@
 <form method="post">
     {{ form.hidden_tag() }}
     <div>
-        {{ form.parent_name.label }}
-        {{ form.parent_name() }}
-        {% for error in form.parent_name.errors %}
+        {{ form.student_username.label }}
+        {{ form.student_username() }}
+        {% for error in form.student_username.errors %}
         <span class="error">{{ error }}</span>
         {% endfor %}
+    </div>
+    <div>
+	{{ form.student_email.label }}
+	{{ form.student_email() }}
+	{% for error in form.student_email.errors %}
+	<span class="error">{{ error }}</span>
+	{% endfor %}
     </div>
     <button type="submit">Link Student</button>
 </form>
