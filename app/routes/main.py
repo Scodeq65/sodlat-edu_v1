@@ -84,12 +84,15 @@ def parent_dashboard():
             flash('An error occurred while linking the parent.', 'danger')
             print(f"Error: {e}")
 
+    # Fetch children and their progress
     children = User.query.filter_by(parent_id=current_user.id).all()
+    progress = {child.id: Progress.query.filter_by(student_id=child.id).all() for child in children}
     return render_template(
         'parent_dashboard.html',
         title='Parent Dashboard',
         form=form,
-        children=children
+        children=children,
+        progress=progress
     )
 
 
