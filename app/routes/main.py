@@ -68,29 +68,29 @@ def dashboard():
 @login_required
 @roles_required('parent')
 def parent_dashboard():
-    form = LinkParentForm()
-    if form.validate_on_submit():
+    link_child_form = LinkParentForm()
+    
+    if link_child_form.validate_on_submit():
         try:
-            student = User.query.filter_by(username=form.student_username.data).first()
-            if student and student.parent_id is None:
-                student.parent_id = current_user.id
+            child = User.query.filter_by(username=link_child_form.child_name.data).first()
+            if child and child.parent_id is None:
+                child.parent_id = current_user.id
                 db.session.commit()
-                flash('Parent linked successfully.', 'success')
+                flash('Child linked successfully.', 'success')
                 return redirect(url_for('main.parent_dashboard'))
             else:
-                flash('Student not found or already linked.', 'danger')
-        except SQLAlchemyError:
+                flash('Child not found or already linked.', 'danger')
+        except SQLAlchemyError as e:
             db.session.rollback()
-            flash('An error occurred while linking the parent.', 'danger')
-            print(f"Error: {e}")
+            flash(f'An error occurred: {e}', 'danger')
 
-    """ Fetch children and their progress."""
+    # Fetch linked children and their progress
     children = User.query.filter_by(parent_id=current_user.id).all()
     progress = {child.id: Progress.query.filter_by(student_id=child.id).all() for child in children}
+
     return render_template(
         'parent_dashboard.html',
-        title='Parent Dashboard',
-        form=form,
+        link_child_form=link_child_form,
         children=children,
         progress=progress
     )
