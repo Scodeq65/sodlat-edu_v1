@@ -72,7 +72,7 @@ def parent_dashboard():
     
     if link_child_form.validate_on_submit():
         try:
-            child = User.query.filter_by(username=link_child_form.child_name.data).first()
+            child = User.query.filter_by(username=link_child_form.student_username.data).first()
             if child and child.parent_id is None:
                 child.parent_id = current_user.id
                 db.session.commit()
