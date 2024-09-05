@@ -37,7 +37,7 @@
 {% if children %}
     {% for child in children %}
         <h3>{{ child.username }}</h3>
-        {% if progress[child.id] %}
+        {% if progress.get(child.id) %}
             <ul>
                 {% for prog in progress[child.id] %}
                     <li>Course: {{ prog.course_name }}, Grade: {{ prog.grade }}, Attendance: {{ prog.attendance }}, Performance: {{ prog.overall_performance }}</li>
