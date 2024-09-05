@@ -106,7 +106,7 @@
 <!-- User Update Form -->
 <h2>Update User Information</h2>
 <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
-    {{ update_user_form.hidden_tag() }}
+    {{ user_form.hidden_tag() }}
     <div>
         {{ user_form.username.label(class="form-label") }}<br>
         {{ user_form.username(class="form-control") }}<br>

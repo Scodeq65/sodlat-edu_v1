@@ -13,9 +13,11 @@
     <div>
         {{ link_child_form.child_name.label(class="form-label") }}<br>
         {{ link_child_form.child_name(class="form-control") }}<br>
-        {% for error in link_child_form.child_name.errors %}
-            <span class="error">{{ error }}</span><br>
-        {% endfor %}
+        {% if link_child_form.child_name.errors %}
+            {% for error in link_child_form.child_name.errors %}
+                <span class="error">{{ error }}</span><br>
+            {% endfor %}
+        {% endif %}
     </div>
     <div>
         <input type="submit" value="Link Child" class="btn btn-primary">
@@ -25,25 +27,25 @@
 <!-- Linked Children List -->
 <h2>Your Linked Children</h2>
 <ul>
-    {% for child in current_user.children %}
-        <li>{{ child.name }}</li>
+    {% for child in children %}
+        <li>{{ child.username }}</li>
     {% endfor %}
 </ul>
 
 <!-- Child's Progress -->
 <h2>Child's Progress</h2>
-{% if current_user.children %}
-    {% for child in current_user.children %}
-        <h3>{{ child.name }}</h3>
-        {% if child.progress %}
+{% if children %}
+    {% for child in children %}
+        <h3>{{ child.username }}</h3>
+        {% if progress[child.id] %}
             <ul>
-                {% for progress in child.progress %}
-                    <li>Course: {{ progress.course_name }}, Grade: {{ progress.grade }}, Attendance: {{ progress.attendance }}, Performance: {{ progress.overall_performance }}</li>
+                {% for prog in progress[child.id] %}
+                    <li>Course: {{ prog.course_name }}, Grade: {{ prog.grade }}, Attendance: {{ prog.attendance }}, Performance: {{ prog.overall_performance }}</li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>No progress data available.</p>
-        {% endfor %}
+            <p>No progress data available for {{ child.username }}.</p>
+        {% endif %}
     {% endfor %}
 {% else %}
     <p>No children linked yet.</p>
