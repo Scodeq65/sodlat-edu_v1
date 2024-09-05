@@ -11,10 +11,10 @@
 <form method="POST" action="{{ url_for('main.parent_dashboard') }}">
     {{ link_child_form.hidden_tag() }}
     <div>
-        {{ link_child_form.child_name.label(class="form-label") }}<br>
-        {{ link_child_form.child_name(class="form-control") }}<br>
-        {% if link_child_form.child_name.errors %}
-            {% for error in link_child_form.child_name.errors %}
+        {{ link_child_form.student_username.label(class="form-label") }}<br>
+        {{ link_child_form.student_username(class="form-control") }}<br>
+        {% if link_child_form.student_username.errors %}
+            {% for error in link_child_form.student_username.errors %}
                 <span class="error">{{ error }}</span><br>
             {% endfor %}
         {% endif %}

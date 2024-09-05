@@ -91,7 +91,7 @@ class LinkParentForm(FlaskForm):
     student_email = StringField('Student Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Link Student')
 
-    def validate_student_name(self, student_username):
+    def validate_student_username(self, student_username):
         """Validate that the parent username exists."""
         student = User.query.filter_by(username=student_username.data).first()
         if not student:
