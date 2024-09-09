@@ -9,9 +9,17 @@
 <!-- Assignments -->
 <h2>Your Assignments</h2>
 {% if current_user.assignments %}
-    <ul>
+    <ul class="list-group">
         {% for assignment in current_user.assignments %}
-            <li>{{ assignment.title }} - Due: {{ assignment.due_date.strftime('%Y-%m-%d') }}</li>
+            <li class="list-group-item">{{ assignment.title }} - Due: {{ assignment.due_date.strftime('%Y-%m-%d') }}</li>
+            <form method="POST" action="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="assignment_file" class="form-control">
+                </div>
+                <div>
+                    <input type="submit" value="Submit" class="btn btn-success">
+                </div>
+            </form>
         {% endfor %}
     </ul>
 {% else %}
@@ -21,11 +29,26 @@
 <!-- Progress -->
 <h2>Your Progress</h2>
 {% if current_user.progress %}
-    <ul>
-        {% for progress in current_user.progress %}
-            <li>Course: {{ progress.course_name }}, Grade: {{ progress.grade }}, Attendance: {{ progress.attendance }}, Performance: {{ progress.overall_performance }}</li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Grade</th>
+                <th>Attendance</th>
+                <th>Performance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for progress in current_user.progress %}
+                <tr>
+                    <td>{{ progress.course_name }}</td>
+                    <td>{{ progress.grade }}</td>
+                    <td>{{ progress.attendance }}</td>
+                    <td>{{ progress.overall_performance }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% else %}
     <p>No progress data available.</p>
 {% endif %}

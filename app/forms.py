@@ -6,7 +6,8 @@ Forms module for handling user input in the SodLat Edu Solution project.
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from app.models import User, Course
+from flask_wtf.file import FileAllowed
+from app.models import User, Course, Assignment, Progress
 from pytz import utc
 from datetime import datetime
 from wtforms_sqlalchemy.fields import QuerySelectField
@@ -76,19 +77,27 @@ class AssignmentForm(FlaskForm):
     """Form for creating or updating assignments."""
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
-    due_date = DateTimeField('Due Date', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()], render_kw={"type": "date"})
+    due_date = DateTimeField('Due Date', format='%Y-%m-%d', validators=[DataRequired()], render_kw={"type": "date"})
     course_id = QuerySelectField('Course', query_factory=lambda: Course.query.all(), get_label='name', allow_blank=False, validators=[DataRequired()])
     submit = SubmitField('Submit')
 
     def validate_due_date(self, due_date):
         """Validate that the due date is not in the past."""
-        if due_date.data < datetime.utcnow().replace(tzinfo=utc):
+        if due_date.data < datetime.utcnow():
             raise ValidationError('Due date cannot be in the past.')
+        
+
+class AssignmentSubmissionForm(FlaskForm):
+    """Form for students to submit assignments."""
+    submission = TextAreaField('Submit your work', validators=[DataRequired()])
+    submission_file = FileField('Upload File', validators=[
+        FileAllowed(['pdf', 'doc', 'docx'], 'PDF or Word documents only!')
+    ])
+    submit = SubmitField('Submit')
 
 class LinkParentForm(FlaskForm):
     """Form for linking a student to a parent."""
     student_username = StringField('Student Username', validators=[DataRequired()])
-    student_email = StringField('Student Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Link Student')
 
     def validate_student_username(self, student_username):
@@ -96,22 +105,12 @@ class LinkParentForm(FlaskForm):
         student = User.query.filter_by(username=student_username.data).first()
         if not student:
             raise ValidationError('No matching student found')
-        elif student.email != self.student_email.data:
-            raise ValidationError('Student email does not match.')
-        
-    def validate_student_email(self, student_email):
-        """Validate that the student email exists."""
-        student = User.query.filter_by(email=student_email.data).first()
-        if not student:
-            raise ValidationError('No matching student found')
-        elif student.username != self.student_username.data:
-            raise ValidationError('Student username does not match.')
 
 
 class ProgressForm(FlaskForm):
     """Form for tracking student progress."""
     student_name = StringField('Student Name', validators=[DataRequired()])
-    course_id = SelectField('Course', choices=[], coerce=int, validators=[DataRequired()])
+    course_id = QuerySelectField('Course', choices=[], coerce=int, validators=[DataRequired()])
     grade = StringField('Grade', validators=[DataRequired()])
     days_present = IntegerField('Days Present', validators=[DataRequired()])
     days_absent = IntegerField('Days Absent', validators=[DataRequired()])
@@ -128,3 +127,17 @@ class ProgressForm(FlaskForm):
         """Ensure attendance values are logical."""
         if self.days_absent.data < 0 or self.days_present.data < 0:
             raise ValidationError('Attendance values must be positive.')
+        
+
+class AttendanceForm(FlaskForm):
+    """Form for recording student attendance."""
+    student_name = StringField('Student Name', validators=[DataRequired()])
+    days_present = IntegerField('Days Present', validators=[DataRequired()])
+    days_absent = IntegerField('Days Absent', validators=[DataRequired()])
+    submit = SubmitField('Submit Attendance')
+
+    def validate_student_name(self, student_name):
+        """Validate that the student username exists."""
+        student = User.query.filter_by(username=student_name.data).first()
+        if not student:
+            raise ValidationError('No matching student found.')

@@ -8,14 +8,14 @@
 
 <!-- Link Child Form -->
 <h2>Link Your Child</h2>
-<form method="POST" action="{{ url_for('main.parent_dashboard') }}">
+<form method="POST" action="{{ url_for('main.parent_dashboard') }}" class="form-group">
     {{ link_child_form.hidden_tag() }}
-    <div>
-        {{ link_child_form.student_username.label(class="form-label") }}<br>
-        {{ link_child_form.student_username(class="form-control") }}<br>
+    <div class="form-group">
+        {{ link_child_form.student_username.label(class="form-label") }}
+        {{ link_child_form.student_username(class="form-control") }}
         {% if link_child_form.student_username.errors %}
             {% for error in link_child_form.student_username.errors %}
-                <span class="error">{{ error }}</span><br>
+                <small class="form-text text-danger">{{ error }}</small>
             {% endfor %}
         {% endif %}
     </div>
@@ -26,11 +26,15 @@
 
 <!-- Linked Children List -->
 <h2>Your Linked Children</h2>
-<ul>
-    {% for child in children %}
-        <li>{{ child.username }}</li>
-    {% endfor %}
-</ul>
+{% if children %}
+    <ul class="list-group">
+        {% for child in children %}
+            <li class="list-group-item">{{ child.username }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No children linked yet.</p>
+{% endif %}
 
 <!-- Child's Progress -->
 <h2>Child's Progress</h2>
@@ -38,16 +42,29 @@
     {% for child in children %}
         <h3>{{ child.username }}</h3>
         {% if progress.get(child.id) %}
-            <ul>
-                {% for prog in progress[child.id] %}
-                    <li>Course: {{ prog.course_name }}, Grade: {{ prog.grade }}, Attendance: {{ prog.attendance }}, Performance: {{ prog.overall_performance }}</li>
-                {% endfor %}
-            </ul>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Grade</th>
+                        <th>Attendance</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prog in progress[child.id] %}
+                        <tr>
+                            <td>{{ prog.course_name }}</td>
+                            <td>{{ prog.grade }}</td>
+                            <td>{{ prog.attendance }}</td>
+                            <td>{{ prog.overall_performance }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
             <p>No progress data available for {{ child.username }}.</p>
         {% endif %}
     {% endfor %}
-{% else %}
-    <p>No children linked yet.</p>
 {% endif %}
 {% endblock %}
