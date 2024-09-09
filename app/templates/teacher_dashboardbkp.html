@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<h1>Teacher Dashboard</h1>
+<p>Welcome, {{ current_user.username }}!</p>
+
+<!-- Course Creation Form -->
+<h2>Create New Course</h2>
+<form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+    {{ course_form.hidden_tag() }}
+    <div>
+        {{ course_form.name.label(class="form-label") }}<br>
+        {{ course_form.name(class="form-control") }}<br>
+        {% for error in course_form.name.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        <input type="submit" value="Create Course" class="btn btn-primary">
+    </div>
+</form>
+
+<!-- Assignment Creation Form -->
+<h2>Create New Assignment</h2>
+<form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+    {{ assignment_form.hidden_tag() }}
+    <div>
+        {{ assignment_form.title.label(class="form-label") }}<br>
+        {{ assignment_form.title(class="form-control") }}<br>
+        {% for error in assignment_form.title.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ assignment_form.content.label(class="form-label") }}<br>
+        {{ assignment_form.content(class="form-control", rows=5) }}<br>
+        {% for error in assignment_form.content.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ assignment_form.due_date.label(class="form-label") }}<br>
+        {{ assignment_form.due_date(class="form-control") }}<br>
+        {% for error in assignment_form.due_date.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ assignment_form.course_id.label(class="form-label") }}<br>
+        {{ assignment_form.course_id(class="form-control") }}<br>
+        {% for error in assignment_form.course_id.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        <input type="submit" value="Create Assignment" class="btn btn-primary">
+    </div>
+</form>
+
+<!-- Progress Creation Form -->
+<h2>Record Progress</h2>
+<form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+    {{ progress_form.hidden_tag() }}
+    <div>
+        {{ progress_form.student_name.label(class="form-label") }}<br>
+        {{ progress_form.student_name(class="form-control") }}<br>
+        {% for error in progress_form.student_name.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ progress_form.course_id.label(class="form-label") }}<br>
+        {{ progress_form.course_id(class="form-control") }}<br>
+        {% for error in progress_form.course_id.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ progress_form.grade.label(class="form-label") }}<br>
+        {{ progress_form.grade(class="form-control") }}<br>
+        {% for error in progress_form.grade.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ progress_form.days_present.label(class="form-label") }}<br>
+        {{ progress_form.days_present(class="form-control") }}<br>
+        {% for error in progress_form.days_present.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ progress_form.days_absent.label(class="form-label") }}<br>
+        {{ progress_form.days_absent(class="form-control") }}<br>
+        {% for error in progress_form.days_absent.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ progress_form.overall_performance.label(class="form-label") }}<br>
+        {{ progress_form.overall_performance(class="form-control", rows=5) }}<br>
+        {% for error in progress_form.overall_performance.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        <input type="submit" value="Record Progress" class="btn btn-primary">
+    </div>
+</form>
+
+<!-- User Update Form -->
+<h2>Update User Information</h2>
+<form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+    {{ user_form.hidden_tag() }}
+    <div>
+        {{ user_form.username.label(class="form-label") }}<br>
+        {{ user_form.username(class="form-control") }}<br>
+        {% for error in user_form.username.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ user_form.email.label(class="form-label") }}<br>
+        {{ user_form.email(class="form-control") }}<br>
+        {% for error in user_form.email.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ user_form.password.label(class="form-label") }}<br>
+        {{ user_form.password(class="form-control") }}<br>
+        {% for error in user_form.password.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ user_form.role.label(class="form-label") }}<br>
+        {{ user_form.role(class="form-control") }}<br>
+        {% for error in user_form.role.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        <input type="submit" value="Update User" class="btn btn-primary">
+    </div>
+</form>
+
+{% endblock %}

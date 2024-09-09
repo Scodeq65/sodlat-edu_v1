@@ -6,7 +6,7 @@ Forms module for handling user input in the SodLat Edu Solution project.
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from flask_wtf.file import FileAllowed
+from flask_wtf.file import FileAllowed, FileField
 from app.models import User, Course, Assignment, Progress
 from pytz import utc
 from datetime import datetime

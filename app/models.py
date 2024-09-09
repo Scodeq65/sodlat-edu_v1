@@ -11,15 +11,22 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(64), nullable=False)
+
+    # Parent-Child relationship
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     children = db.relationship('User', backref='parent', remote_side=[id])
 
+    # Attendance tracking
     days_present = db.Column(db.Integer, default=0)
     days_absent = db.Column(db.Integer, default=0)
 
+    # Teacher-related relationships
     courses = db.relationship('Course', backref='teacher', lazy=True)
+    progress_reports = db.relationship('Progress', foreign_keys='progress.teacher_id', backref='teacher', lazy=True)
+
+    # Student-related relationships
     assignments = db.relationship('Assignment', backref='student', lazy=True)
-    progress = db.relationship('Progress', backref='student', lazy=True)
+    progress_records = db.relationship('Progress', foreign_keys='Parent.student_id', backref='student', lazy=True)
     assignment_submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
 
     def set_password(self, password):
