@@ -22,11 +22,11 @@ class User(UserMixin, db.Model):
 
     # Teacher-related relationships
     courses = db.relationship('Course', backref='teacher', lazy=True)
-    progress_reports = db.relationship('Progress', foreign_keys='progress.teacher_id', backref='teacher', lazy=True)
+    progress_reports = db.relationship('Progress', foreign_keys='Progress.teacher_id', backref='teacher', lazy=True)
 
     # Student-related relationships
     assignments = db.relationship('Assignment', backref='student', lazy=True)
-    progress_records = db.relationship('Progress', foreign_keys='Parent.student_id', backref='student', lazy=True)
+    progress_records = db.relationship('Progress', foreign_keys='Progress.student_id', backref='student', lazy=True)
     assignment_submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
 
     def set_password(self, password):
