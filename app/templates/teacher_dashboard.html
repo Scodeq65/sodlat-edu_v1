@@ -71,9 +71,9 @@
         {% endfor %}
     </div>
     <div>
-        {{ progress_form.teacher_name.label(class="form-label") }}<br>
-        {{ progress_form.teacher_name(class="form-control") }}<br>
-        {% for error in progress_form.teacher_name.errors %}
+        {{ progress_form.course_id.label(class="form-label") }}<br>
+        {{ progress_form.course_id(class="form-control") }}<br>
+        {% for error in progress_form.course_id.errors %}
             <span class="error">{{ error }}</span><br>
         {% endfor %}
     </div>
@@ -85,9 +85,16 @@
         {% endfor %}
     </div>
     <div>
-        {{ progress_form.attendance.label(class="form-label") }}<br>
-        {{ progress_form.attendance(class="form-control") }}<br>
-        {% for error in progress_form.attendance.errors %}
+        {{ progress_form.days_present.label(class="form-label") }}<br>
+        {{ progress_form.days_present(class="form-control") }}<br>
+        {% for error in progress_form.days_present.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
+        {{ progress_form.days_absent.label(class="form-label") }}<br>
+        {{ progress_form.days_absent(class="form-control") }}<br>
+        {% for error in progress_form.days_absent.errors %}
             <span class="error">{{ error }}</span><br>
         {% endfor %}
     </div>
@@ -129,7 +136,15 @@
         {% endfor %}
     </div>
     <div>
+        {{ user_form.role.label(class="form-label") }}<br>
+        {{ user_form.role(class="form-control") }}<br>
+        {% for error in user_form.role.errors %}
+            <span class="error">{{ error }}</span><br>
+        {% endfor %}
+    </div>
+    <div>
         <input type="submit" value="Update User" class="btn btn-primary">
     </div>
 </form>
+
 {% endblock %}

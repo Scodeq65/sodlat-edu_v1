@@ -106,7 +106,7 @@ def teacher_dashboard():
     user_form = UserForm()
 
     # Handle course creation
-    if course_form.validate_on_submit():
+    if course_form.submit.data and course_form.validate_on_submit():
         try:
             new_course = Course(name=course_form.name.data, teacher_id=current_user.id)
             db.session.add(new_course)
@@ -118,13 +118,19 @@ def teacher_dashboard():
             flash('An error occurred while creating the course.', 'danger')
 
     # Handle assignment creation
-    if assignment_form.validate_on_submit():
+    if assignment_form.submit.data and assignment_form.validate_on_submit():
         try:
-            new_assignment = Assignment(
+            # Ensure course_id is valid and correctly assigned
+            course_id = assignment_form.course_id.data
+            course = Course.query.get(course_id)
+            if not course:
+                flash('Invalid course selected.', 'danger')
+            else:
+                new_assignment = Assignment(
                 title=assignment_form.title.data,
                 content=assignment_form.content.data,
                 due_date=assignment_form.due_date.data,
-                course_id=assignment_form.course_id.data.id,  # Ensure this is set correctly
+                course_id=course.id,
                 student_id=None
             )
             db.session.add(new_assignment)
@@ -135,17 +141,20 @@ def teacher_dashboard():
             db.session.rollback()
             flash('An error occurred while creating the assignment.', 'danger')
 
+
     # Handle progress creation
-    if progress_form.validate_on_submit():
+    if progress_form.submit.data and progress_form.validate_on_submit():
         student = User.query.filter_by(username=progress_form.student_name.data).first()
-        course = Course.query.filter_by(name=progress_form.teacher_name.data).first()
-        if student and course:
+        if not student:
+            flash('Student not found.', 'danger')
+        else:
             try:
                 new_progress = Progress(
                     student_id=student.id,
-                    course_id=course.id,
+                    course_id=progress_form.course_id.data,
                     grade=progress_form.grade.data,
-                    attendance=progress_form.attendance.data,
+                    days_present=progress_form.days_present.data,
+                    days_absent=progress_form.days_absent.data,
                     overall_performance=progress_form.overall_performance.data
                 )
                 db.session.add(new_progress)
@@ -155,11 +164,10 @@ def teacher_dashboard():
             except SQLAlchemyError:
                 db.session.rollback()
                 flash('An error occurred while recording progress.', 'danger')
-        else:
-            flash('Student or course not found.', 'danger')
+
 
     # Handle user updates
-    if user_form.validate_on_submit():
+    if user_form.submit.data and user_form.validate_on_submit():
         user = User.query.get(user_form.id.data)
         if user:
             user.username = user_form.username.data
@@ -188,8 +196,8 @@ def teacher_dashboard():
         assignment_form=assignment_form,
         course_form=course_form,
         progress_form=progress_form,
-        user_form=user_form,  # Pass UserForm to template
-        users=users  # Provide user data to the template if needed
+        user_form=user_form,
+        users=users
     )
 
 @main.route('/student_dashboard', methods=['GET', 'POST'])

@@ -4,7 +4,7 @@ Forms module for handling user input in the SodLat Edu Solution project.
 """
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, DateTimeField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from app.models import User, Course
 from pytz import utc
@@ -76,7 +76,7 @@ class AssignmentForm(FlaskForm):
     """Form for creating or updating assignments."""
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
-    due_date = DateTimeField('Due Date', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()])
+    due_date = DateTimeField('Due Date', format='%Y-%m-%d %H:%M:%S', validators=[DataRequired()], render_kw={"type": "date"})
     course_id = QuerySelectField('Course', query_factory=lambda: Course.query.all(), get_label='name', allow_blank=False, validators=[DataRequired()])
     submit = SubmitField('Submit')
 
@@ -111,9 +111,10 @@ class LinkParentForm(FlaskForm):
 class ProgressForm(FlaskForm):
     """Form for tracking student progress."""
     student_name = StringField('Student Name', validators=[DataRequired()])
-    teacher_name = StringField('Teacher Name', validators=[DataRequired()])
+    course_id = SelectField('Course', choices=[], coerce=int, validators=[DataRequired()])
     grade = StringField('Grade', validators=[DataRequired()])
-    attendance = StringField('Attendance')
+    days_present = IntegerField('Days Present', validators=[DataRequired()])
+    days_absent = IntegerField('Days Absent', validators=[DataRequired()])
     overall_performance = TextAreaField('Overall Performance')
     submit = SubmitField('Submit')
 
@@ -122,9 +123,8 @@ class ProgressForm(FlaskForm):
         student = User.query.filter_by(username=student_name.data).first()
         if not student:
             raise ValidationError('No matching student found.')
-        
-    def validate_teacher_name(self, teacher_name):
-        """Validate that the teacher username exists."""
-        teacher = User.query.filter_by(username=teacher_name.data).first()
-        if not teacher:
-            raise ValidationError('No matching teacher found.')
+
+    def validate_days_present(self, days_present):
+        """Ensure attendance values are logical."""
+        if self.days_absent.data < 0 or self.days_present.data < 0:
+            raise ValidationError('Attendance values must be positive.')
