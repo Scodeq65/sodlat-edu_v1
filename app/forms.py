@@ -110,7 +110,7 @@ class LinkParentForm(FlaskForm):
 class ProgressForm(FlaskForm):
     """Form for tracking student progress."""
     student_name = StringField('Student Name', validators=[DataRequired()])
-    course_id = QuerySelectField('Course', choices=[], coerce=int, validators=[DataRequired()])
+    course_id = QuerySelectField('Course', query_factory=lambda: Course.query.all(), get_label='name', validators=[DataRequired()])
     grade = StringField('Grade', validators=[DataRequired()])
     days_present = IntegerField('Days Present', validators=[DataRequired()])
     days_absent = IntegerField('Days Absent', validators=[DataRequired()])

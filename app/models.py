@@ -22,11 +22,11 @@ class User(UserMixin, db.Model):
 
     # Teacher-related relationships
     courses = db.relationship('Course', backref='teacher', lazy=True)
-    progress_reports = db.relationship('Progress', foreign_keys='Progress.teacher_id', backref='teacher', lazy=True)
+    progress_reports = db.relationship('Progress', foreign_keys='Progress.teacher_id', backref='instructor', lazy=True)
 
     # Student-related relationships
     assignments = db.relationship('Assignment', backref='student', lazy=True)
-    progress_records = db.relationship('Progress', foreign_keys='Progress.student_id', backref='student', lazy=True)
+    progress_records = db.relationship('Progress', foreign_keys='Progress.student_id', backref='student_progress', lazy=True)
     assignment_submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
 
     def set_password(self, password):
@@ -77,5 +77,5 @@ class Progress(db.Model):
     overall_performance = db.Column(db.String(100), nullable=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    student = db.relationship('User', foreign_keys=[student_id], backref='progress_records')
-    teacher = db.relationship('User', foreign_keys=[teacher_id], backref='progress_reports')
+    student = db.relationship('User', foreign_keys=[student_id], backref='student_progress_records')
+    teacher = db.relationship('User', foreign_keys=[teacher_id], backref='teacher_progress_reports')
