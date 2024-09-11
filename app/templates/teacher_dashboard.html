@@ -48,7 +48,7 @@
     </div>
     <div class="form-group">
         {{ assignment_form.due_date.label(class="form-label") }}
-        {{ assignment_form.due_date(class="form-control") }}
+        {{ assignment_form.due_date(class="form-control", type="date") }}
         {% if assignment_form.due_date.errors %}
             {% for error in assignment_form.due_date.errors %}
                 <small class="form-text text-danger">{{ error }}</small>
@@ -57,7 +57,7 @@
     </div>
     <div class="form-group">
         {{ assignment_form.course_id.label(class="form-label") }}
-        {{ assignment_form.course_id(class="form-control") }}
+        {{ assignment_form.course_id(class="form-control", type="select") }}
         {% if assignment_form.course_id.errors %}
             {% for error in assignment_form.course_id.errors %}
                 <small class="form-text text-danger">{{ error }}</small>
@@ -83,10 +83,10 @@
         {% endif %}
     </div>
     <div class="form-group">
-        {{ progress_form.course.label(class="form-label") }}
-        {{ progress_form.course(class="form-control") }}
-        {% if progress_form.course.errors %}
-            {% for error in progress_form.course.errors %}
+        {{ progress_form.course_id.label(class="form-label") }}
+        {{ progress_form.course_id(class="form-control") }}
+        {% if progress_form.course_id.errors %}
+            {% for error in progress_form.course_id.errors %}
                 <small class="form-text text-danger">{{ error }}</small>
             {% endfor %}
         {% endif %}

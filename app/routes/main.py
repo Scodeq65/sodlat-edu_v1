@@ -166,7 +166,7 @@ def teacher_dashboard():
             try:
                 new_progress = Progress(
                     student_id=student.id,
-                    course_id=progress_form.course.data,  # Ensure this field exists in the form
+                    course_id=progress_form.course_id.data,
                     grade=progress_form.grade.data,
                     days_present=progress_form.days_present.data,
                     days_absent=progress_form.days_absent.data,
