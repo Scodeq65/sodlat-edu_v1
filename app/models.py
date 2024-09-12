@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.db import db
 
-
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -15,7 +14,7 @@ class User(UserMixin, db.Model):
     
     # Relationships
     parent = db.relationship('User', back_populates='children', remote_side=[id])
-    children = db.relationship('User', back_populates='parent', cascade="all, delete")
+    children = db.relationship('User', back_populates='parent', cascade="all, delete", remote_side=[parent_id])
     
     # Additional fields
     is_teacher = db.Column(db.Boolean, default=False)
@@ -52,7 +51,7 @@ class Course(db.Model):
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     # Relationships
-    teacher = db.relationship('User', backref='courses')
+    teacher = db.relationship('User', backref='courses', foreign_keys=[teacher_id])
     assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete")
 
     def __repr__(self):
@@ -84,7 +83,7 @@ class AssignmentSubmission(db.Model):
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
     
     # Relationships
-    student = db.relationship('User', backref='assignment_submissions')
+    student = db.relationship('User', backref='assignment_submissions', foreign_keys=[student_id])
     assignment = db.relationship('Assignment', back_populates='submissions')
 
     def __repr__(self):
@@ -103,9 +102,9 @@ class Progress(db.Model):
     overall_performance = db.Column(db.Text, nullable=True)
 
     # Relationships
-    student = db.relationship('User', backref='progress_reports')
+    student = db.relationship('User', backref='progress_reports', foreign_keys=[student_id])
     course = db.relationship('Course', backref='progress')
-    teacher = db.relationship('User', foreign_keys=[teacher_id], back_populates='progress_reports')
+    teacher = db.relationship('User', backref='teacher_progress', foreign_keys=[teacher_id])
 
     def __repr__(self):
         return f"Progress('{self.student_id}', '{self.course_id}')"
