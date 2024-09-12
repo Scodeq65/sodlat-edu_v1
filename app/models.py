@@ -92,7 +92,7 @@ class Progress(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), index=True, nullable=False)
 
-    # Nullable fields for incomplete data
+    # Nullable fields for incomplete data.
     grade = db.Column(db.String(10), nullable=True)
     days_present = db.Column(db.Integer, nullable=True, default=0)
     days_absent = db.Column(db.Integer, nullable=True, default=0)
