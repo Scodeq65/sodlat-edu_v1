@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Student Dashboard{% endblock %}
 
@@ -6,50 +6,17 @@
 <h1>Student Dashboard</h1>
 <p>Welcome, {{ current_user.username }}!</p>
 
-<!-- Assignments -->
-<h2>Your Assignments</h2>
-{% if current_user.assignments %}
-    <ul class="list-group">
-        {% for assignment in current_user.assignments %}
-            <li class="list-group-item">{{ assignment.title }} - Due: {{ assignment.due_date.strftime('%Y-%m-%d') }}</li>
-            <form method="POST" action="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
-                <div class="form-group">
-                    <input type="file" name="assignment_file" class="form-control">
-                </div>
-                <div>
-                    <input type="submit" value="Submit" class="btn btn-success">
-                </div>
-            </form>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No assignments found.</p>
-{% endif %}
+<!-- View Assignments -->
+<h2>Assignments</h2>
+<ul>
+    {% for assignment in assignments %}
+        <li>{{ assignment.title }} - <a href="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}">Submit</a></li>
+    {% else %}
+        <p>No assignments found.</p>
+    {% endfor %}
+</ul>
 
-<!-- Progress -->
-<h2>Your Progress</h2>
-{% if current_user.progress %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Course</th>
-                <th>Grade</th>
-                <th>Attendance</th>
-                <th>Performance</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for progress in current_user.progress %}
-                <tr>
-                    <td>{{ progress.course_name }}</td>
-                    <td>{{ progress.grade }}</td>
-                    <td>{{ progress.attendance }}</td>
-                    <td>{{ progress.overall_performance }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No progress data available.</p>
-{% endif %}
+<!-- View Progress -->
+<h2>My Progress</h2>
+<a href="{{ url_for('main.view_progress', student_id=current_user.id) }}" class="btn btn-primary">View Progress</a>
 {% endblock %}

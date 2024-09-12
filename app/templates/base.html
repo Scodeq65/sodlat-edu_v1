@@ -4,43 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SodLat Edu Solution{% endblock %}</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <meta name="author" content="Sodiq Agbaraojo">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 <body>
-    <header class="navbar navbar-expand-lg navbar-light bg-light">
-        <nav class="container">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">SodLat Edu Solution</a>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
-                {% if current_user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a></li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
-                {% endif %}
-            </ul>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                        </li>
+                        {% if current_user.is_teacher %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.teacher_dashboard') }}">Teacher Dashboard</a>
+                            </li>
+                        {% elif current_user.is_parent %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.parent_dashboard') }}">Parent Dashboard</a>
+                            </li>
+                        {% elif current_user.is_student %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.student_dashboard') }}">Student Dashboard</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </nav>
     </header>
 
-    <main class="container mt-4">
-        {% block content %}{% endblock %}
+    <main role="main" class="container mt-4">
+        {% block content %}
+        {% endblock %}
     </main>
 
-    <footer class="text-center mt-5">
-        {% block footer %}
-        <p>&copy; 2024 SodLat Edu Solution. All rights reserved.</p>
-        {% endblock %}
+    <footer class="text-center mt-4 mb-4">
+        <p>&copy; 2024 SodLat Edu Solution. All right reserved</p>
     </footer>
-
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
