@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     children = db.relationship('User', backref='parent', remote_side=[id], cascade="all, delete", lazy='dynamic')
 
-    # Attendance tracking
+    # Attendance tracking.
     days_present = db.Column(db.Integer, default=0)
     days_absent = db.Column(db.Integer, default=0)
 
