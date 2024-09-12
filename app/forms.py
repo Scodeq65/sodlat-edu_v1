@@ -48,7 +48,9 @@ class UserForm(FlaskForm):
     """Form for creating or updating users."""
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    role = SelectField('Role', choices=[('parent', 'Parent'), ('teacher', 'Teacher'), ('student', 'Student')], validators=[DataRequired()])
+    is_teacher = BooleanField('Teacher')
+    is_parent = BooleanField('Parent')
+    is_student = BooleanField('Student')
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[
         EqualTo('password', message='Passwords must match.')])

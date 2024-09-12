@@ -194,7 +194,9 @@ def teacher_dashboard():
             user.email = user_form.email.data
             if user_form.password.data:
                 user.set_password(user_form.password.data)
-            user.role = user_form.role.data
+            user.is_teacher = user_form.is_teacher.data
+            user.is_parent = user_form.is_parent.data
+            user.is_student = user_form.is_student.data
             try:
                 db.session.commit()
                 flash('User updated successfully.', 'success')

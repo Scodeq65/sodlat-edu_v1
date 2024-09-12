@@ -21,7 +21,8 @@ class User(UserMixin, db.Model):
 
     # Parent-Child relationship with circular relationship validation
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    children = db.relationship('User', backref='parent', remote_side=[id], cascade="all, delete", lazy='dynamic')
+    children = db.relationship('User', remote_side=[id], cascade="all, delete", back_populates="parent")
+    parent = db.relationship('User', back_populates='children', remote_side=[parent_id])
 
     # Attendance tracking.
     days_present = db.Column(db.Integer, default=0)
@@ -29,11 +30,12 @@ class User(UserMixin, db.Model):
 
     # Teacher-related relationships
     courses = db.relationship('Course', backref='teacher', lazy='dynamic', cascade="all, delete")
-    progress_reports = db.relationship('Progress', foreign_keys='Progress.teacher_id', backref='teacher', lazy='dynamic')
+    progress_reports = db.relationship('Progress', foreign_keys='Progress.teacher_id', lazy='dynamic', back_populates="teacher")
 
     # Student-related relationships
     assignments = db.relationship('AssignmentSubmission', backref='student', lazy='dynamic')
-    progress_records = db.relationship('Progress', foreign_keys='Progress.student_id', backref='student', lazy='dynamic')
+    progress_records = db.relationship('Progress', foreign_keys='Progress.student_id', lazy='dynamic', back_populates="student")
+    assignment_submissions = db.relationship('AssignmentSubmission', back_populates='assignment')
 
     def set_password(self, password):
         """Hashes and sets the user's password."""
@@ -62,7 +64,7 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True, nullable=False)
-    assignments = db.relationship('Assignment', backref='course', lazy='dynamic', cascade="all, delete")
+    assignments = db.relationship('Assignment', lazy='dynamic', cascade="all, delete", back_populates="course")
 
 
 class Assignment(db.Model):
@@ -74,7 +76,7 @@ class Assignment(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), index=True, nullable=False)
 
     # Many-to-many relationship via AssignmentSubmission table
-    submissions = db.relationship('AssignmentSubmission', backref='assignment', lazy='dynamic', cascade="all, delete")
+    submissions = db.relationship('AssignmentSubmission', lazy='dynamic', cascade="all, delete", back_populates="assignment")
 
 
 class AssignmentSubmission(db.Model):
@@ -84,6 +86,10 @@ class AssignmentSubmission(db.Model):
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), index=True, nullable=False)
     submission_content = db.Column(db.Text, nullable=False)
     submission_file = db.Column(db.String(150))
+
+    # Relationships for back_populates
+    student = db.relationship('User', back_populates='assignments')
+    assignment = db.relationship('Assignment', back_populates='submissions')
 
 
 class Progress(db.Model):
@@ -100,5 +106,6 @@ class Progress(db.Model):
 
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True, nullable=False)
 
-    student = db.relationship('User', foreign_keys=[student_id], backref='progress_records', lazy='dynamic')
-    teacher = db.relationship('User', foreign_keys=[teacher_id], backref='progress_reports', lazy='dynamic')
+    student = db.relationship('User', foreign_keys=[student_id], back_populates='progress_records')
+    teacher = db.relationship('User', foreign_keys=[teacher_id], back_populates='progress_reports')
+    course = db.relationship('Course', backref='progress', lazy='dynamic')
