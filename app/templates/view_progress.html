@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}View Progress{% endblock %}
+
+{% block content %}
+<h1>Progress for {{ student.username }}</h1>
+
+<h2>Course: {{ progress.course }}</h2>
+<p>Grade: {{ progress.grade }}</p>
+<p>Days Present: {{ progress.days_present }}</p>
+<p>Days Absent: {{ progress.days_absent }}</p>
+<p>Overall Performance:</p>
+<p>{{ progress.overall_performance }}</p>
+
+<a href="{{ url_for('main.student_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+{% endblock %}
