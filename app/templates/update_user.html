@@ -5,7 +5,7 @@
 {% block content %}
 <h1>Update User Information</h1>
 
-<form method="POST" action="{{ url_for('main.update_user') }}">
+<form method="POST" action="{{ url_for('main.teacher_dashhboard') }}">
     {{ user_form.hidden_tag() }}
     <div class="form-group">
         {{ user_form.username.label(class="form-label") }}

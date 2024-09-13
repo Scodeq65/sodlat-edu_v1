@@ -11,6 +11,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    role = db.Column(db.String(50), nullable=False)
+
     
     # Relationships
     parent = db.relationship('User', back_populates='children', remote_side=[id])

@@ -26,11 +26,11 @@ def login():
             flash(f'Welcome, {user.username}!', 'success')
 
             # Redirect based on user role
-            if user.role == 'Parent':
+            if user.is_parent == 'parent':
                 return redirect(url_for('main.parent_dashboard'))
-            elif user.role == 'Teacher':
+            elif user.is_teacher == 'teacher':
                 return redirect(url_for('main.teacher_dashboard'))
-            elif user.role == 'Student':
+            elif user.is_student == 'student':
                 return redirect(url_for('main.student_dashboard'))
             else:
                 return redirect(url_for('main.index'))

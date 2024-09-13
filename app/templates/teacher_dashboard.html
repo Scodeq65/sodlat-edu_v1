@@ -8,7 +8,7 @@
 
 <!-- Manage Assignments -->
 <h2>Create Assignment</h2>
-<form method="POST" action="{{ url_for('main.create_assignment') }}">
+<form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
     {{ assignment_form.hidden_tag() }}
     <div class="form-group">
         {{ assignment_form.title.label(class="form-label") }}
