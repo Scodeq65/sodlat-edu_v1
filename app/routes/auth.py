@@ -4,9 +4,12 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required
 from flask import Blueprint
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, db
+from app.models import User
+from app.db import db
+
 
 auth = Blueprint('auth', __name__)
+
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -26,11 +29,11 @@ def login():
             flash(f'Welcome, {user.username}!', 'success')
 
             # Redirect based on user role
-            if user.is_parent == 'parent':
+            if user.is_parent:
                 return redirect(url_for('main.parent_dashboard'))
-            elif user.is_teacher == 'teacher':
+            elif user.is_teacher:
                 return redirect(url_for('main.teacher_dashboard'))
-            elif user.is_student == 'student':
+            elif user.is_student:
                 return redirect(url_for('main.student_dashboard'))
             else:
                 return redirect(url_for('main.index'))
@@ -55,9 +58,16 @@ def register():
         user = User(
             username=form.username.data,
             email=form.email.data,
-            role=form.role.data
         )
         user.set_password(form.password.data)
+        
+        # Assign role based on form
+        if form.role.data == 'parent':
+            user.is_parent = True
+        elif form.role.data == 'teacher':
+            user.is_teacher = True
+        elif form.role.data == 'student':
+            user.is_student = True
         try:
             db.session.add(user)
             db.session.commit()

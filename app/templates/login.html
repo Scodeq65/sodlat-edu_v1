@@ -9,7 +9,7 @@
         <form method="POST" action="{{ url_for('auth.login') }}">
             {{ form.hidden_tag() }}
             <div class="mb-3">
-                {{ form.username.label }} {{ form.username(class="form-control") }}
+                {{ form.username_or_email.label }} {{ form.username_or_email(class="form-control") }}
             </div>
             <div class="mb-3">
                 {{ form.password.label }} {{ form.password(class="form-control") }}
