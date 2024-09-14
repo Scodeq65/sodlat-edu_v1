@@ -8,7 +8,6 @@ from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAr
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from flask_wtf.file import FileAllowed, FileField
 from app.models import User, Course
-from pytz import utc
 from datetime import datetime
 from wtforms_sqlalchemy.fields import QuerySelectField
 

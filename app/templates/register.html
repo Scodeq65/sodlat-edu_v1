@@ -7,27 +7,36 @@
     <div class="col-md-6">
         <h2 class="text-center">Register</h2>
         <form method="POST" action="{{ url_for('auth.register') }}">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.username.label }} {{ form.username(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ form.email.label }} {{ form.email(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ form.password.label }} {{ form.password(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ form.confirm_password.label }} {{ form.confirm_password(class="form-control") }}
-            </div>
-	    <div class="mb-3">
-		{{ form.role.label }} {{ form.role(class="form-control") }}
-		{% if form.role.errors %}
-		    <div class="text-danger">{{ form.role.errors[0] }}</div>
-		{% endif %}
-	    </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.username.label }} {{ form.username(class="form-control") }}
+        {% if form.username.errors %}
+            <div class="text-danger">{{ form.username.errors[0] }}</div>
+        {% endif %}
     </div>
-</div>
-{% endblock %}
+    <div class="mb-3">
+        {{ form.email.label }} {{ form.email(class="form-control") }}
+        {% if form.email.errors %}
+            <div class="text-danger">{{ form.email.errors[0] }}</div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        {{ form.password.label }} {{ form.password(class="form-control") }}
+        {% if form.password.errors %}
+            <div class="text-danger">{{ form.password.errors[0] }}</div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        {{ form.confirm_password.label }} {{ form.confirm_password(class="form-control") }}
+        {% if form.confirm_password.errors %}
+            <div class="text-danger">{{ form.confirm_password.errors[0] }}</div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        {{ form.role.label }} {{ form.role(class="form-control") }}
+        {% if form.role.errors %}
+            <div class="text-danger">{{ form.role.errors[0] }}</div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>

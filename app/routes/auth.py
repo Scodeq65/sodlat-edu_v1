@@ -51,10 +51,7 @@ def register():
     """
     form = RegistrationForm()
     if form.validate_on_submit():
-        if form.password.data != form.confirm_password.data:
-            flash('Passwords do not match!', 'danger')
-            return redirect(url_for('auth.register'))
-
+        # Create the user
         user = User(
             username=form.username.data,
             email=form.email.data,
@@ -64,10 +61,13 @@ def register():
         # Assign role based on form
         if form.role.data == 'parent':
             user.is_parent = True
+            user.role = 'parent'
         elif form.role.data == 'teacher':
             user.is_teacher = True
+            user.role = 'teacher'
         elif form.role.data == 'student':
             user.is_student = True
+            user.role = 'student'
         try:
             db.session.add(user)
             db.session.commit()
