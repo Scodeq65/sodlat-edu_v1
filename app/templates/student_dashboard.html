@@ -1,22 +1,36 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-<h1>Student Dashboard</h1>
-<p>Welcome, {{ current_user.username }}!</p>
+<h2>Welcome, {{ current_user.username }}!</h2>
 
-<!-- View Assignments -->
-<h2>Assignments</h2>
-<ul>
-    {% for assignment in assignments %}
-        <li>{{ assignment.title }} - <a href="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}">Submit</a></li>
-    {% else %}
-        <p>No assignments found.</p>
-    {% endfor %}
-</ul>
+<    <div class="col-md-6">
+    <h4>Your Assignments</h4>
+    <ul>
+        {% for assignment in assignments %}
+        <li>
+            <strong>{{ assignment.title }}</strong> - {{ assignment.description }}<br>
+            Due: {{ assignment.due_date.strftime('%Y-%m-%d') }}<br>
+            <a href="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}" class="btn btn-primary mt-2">Submit Assignment</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 
-<!-- View Progress -->
-<h2>My Progress</h2>
-<a href="{{ url_for('main.view_progress', student_id=current_user.id) }}" class="btn btn-primary">View Progress</a>
+<div class="col-md-6">
+    <h4>Your Progress</h4>
+    <ul>
+        {% for progress in progress_reports %}
+        <li>
+            <strong>Course:</strong> {{ progress.course.name }}<br>
+            <strong>Grade:</strong> {{ progress.grade }}<br>
+            <strong>Days Present:</strong> {{ progress.days_present }}<br>
+            <strong>Days Absent:</strong> {{ progress.days_absent }}<br>
+            <strong>Overall Performance:</strong> {{ progress.overall_performance }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</div>
 {% endblock %}

@@ -1,25 +1,22 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Submit Assignment{% endblock %}
 
 {% block content %}
-<h1>Submit Assignment: {{ assignment.title }}</h1>
+<h2>Submit Assignment</h2>
+
+<p><strong>Assignment:</strong> {{ assignment.title }}</p>
+<p><strong>Description:</strong> {{ assignment.description }}</p>
+<p><strong>Due Date:</strong> {{ assignment.due_date.strftime('%Y-%m-%d') }}</p>
 
 <form method="POST" action="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
-    <div class="form-group">
-        {{ form.file.label(class="form-label") }}
-        {{ form.file(class="form-control-file") }}
-        {% if form.file.errors %}
-            {% for error in form.file.errors %}
-                <small class="form-text text-danger">{{ error }}</small>
-            {% endfor %}
-        {% endif %}
+    
+    <div class="mb-3">
+        {{ form.submission_file.label }} 
+        {{ form.submission_file(class="form-control") }}
     </div>
-    <div>
-        <button type="submit" class="btn btn-primary">Submit Assignment</button>
-    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-
-<a href="{{ url_for('main.student_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
 {% endblock %}

@@ -72,7 +72,7 @@ def dashboard():
 
 @main.route('/parent_dashboard', methods=['GET', 'POST'])
 @login_required
-@roles_required('parent')
+@roles_required('is_parent')
 def parent_dashboard():
     link_child_form = LinkParentForm()
 
@@ -103,7 +103,7 @@ def parent_dashboard():
 
 @main.route('/teacher_dashboard', methods=['GET', 'POST'])
 @login_required
-@roles_required('teacher')
+@roles_required('is_teacher')
 def teacher_dashboard():
     course_form = CourseForm()
     assignment_form = AssignmentForm()
@@ -225,7 +225,7 @@ def teacher_dashboard():
 
 @main.route('/student_dashboard', methods=['GET', 'POST'])
 @login_required
-@roles_required('student')
+@roles_required('is_student')
 def student_dashboard():
     assignments = Assignment.query.filter_by(course_id=current_user.course_id).all()
     progress = Progress.query.filter_by(student_id=current_user.id).all()

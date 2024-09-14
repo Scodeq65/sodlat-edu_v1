@@ -1,20 +1,27 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Parent Dashboard{% endblock %}
 
 {% block content %}
-<h1>Parent Dashboard</h1>
-<p>Welcome, {{ current_user.username }}!</p>
+<h2>Welcome, {{ current_user.username }}!</h2>
+<p>You can view your children's progress here.</p>
 
-<!-- Link to child progress -->
-<h2>My Children</h2>
-<ul>
-    {% for child in children %}
-        <li>
-            <a href="{{ url_for('main.view_progress', student_id=child.id) }}">{{ child.username }}</a>
-        </li>
-    {% else %}
-        <p>No children linked.</p>
-    {% endfor %}
-</ul>
+<div class="row">
+    <div class="col-md-6">
+        <h4>Your Children</h4>
+        <ul>
+            {% for child in children %}
+            <li>{{ child.username }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h4>Progress Reports</h4>
+        <ul>
+            {% for report in progress_reports %}
+            <li>{{ report.course.name }}: {{ report.grade }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}
