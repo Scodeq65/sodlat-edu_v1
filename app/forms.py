@@ -70,14 +70,15 @@ class UserForm(FlaskForm):
 
 class CourseForm(FlaskForm):
     """Form for creating or updating courses."""
-    name = StringField('Course Name', validators=[DataRequired()])
+    course_name = StringField('Course Name', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 
 class AssignmentForm(FlaskForm):
     """Form for creating or updating assignments."""
     title = StringField('Title', validators=[DataRequired()])
-    content = TextAreaField('Content', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
     due_date = DateTimeField('Due Date', format='%Y-%m-%d', validators=[DataRequired()], render_kw={"type": "date"})
     course_id = QuerySelectField('Course', query_factory=lambda: Course.query.all(), get_label='name', allow_blank=False, validators=[DataRequired()])
     submit = SubmitField('Submit')

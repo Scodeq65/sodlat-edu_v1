@@ -24,13 +24,13 @@ class User(UserMixin, db.Model):
     
     # Relationships
     parent = db.relationship('User', back_populates='children', remote_side=[id])
-    children = db.relationship('User', back_populates='parent', cascade="all, delete", remote_side=[parent_id])
+    children = db.relationship('User', back_populates='parent', cascade="all, delete")
     
     # Courses a student is enrolled in (many-to-many)
     enrolled_courses = db.relationship('Course', secondary=student_courses, backref='students')
 
     # Courses created by a teacher (one-to-many)
-    created_courses = db.relationship('Course', backref='teacher', lazy=True)
+   # created_courses = db.relationship('Course', backref='teacher', lazy=True)
     
     # Roles flag
     is_teacher = db.Column(db.Boolean, default=False)
@@ -67,6 +67,7 @@ class Course(db.Model):
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     # Relationships
+    progress = db.relationship('Progress', back_populates='course', cascade='all, delete')
     teacher = db.relationship('User', backref='courses', foreign_keys=[teacher_id])
     assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete")
 
@@ -119,7 +120,7 @@ class Progress(db.Model):
 
     # Relationships
     student = db.relationship('User', backref='progress_reports', foreign_keys=[student_id])
-    course = db.relationship('Course', back_populate='progress')
+    course = db.relationship('Course', back_populates='progress')
     teacher = db.relationship('User', backref='teacher_progress', foreign_keys=[teacher_id])
 
     def __repr__(self):
