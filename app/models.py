@@ -4,6 +4,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app.db import db
 
+
+# Association table for many-to-many relationship between students and courses
+student_courses = db.Table('student_courses',
+    db.Column('student_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('course_id', db.Integer, db.ForeignKey('course.id'))
+)
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -18,7 +26,13 @@ class User(UserMixin, db.Model):
     parent = db.relationship('User', back_populates='children', remote_side=[id])
     children = db.relationship('User', back_populates='parent', cascade="all, delete", remote_side=[parent_id])
     
-    # Additional fields
+    # Courses a student is enrolled in (many-to-many)
+    enrolled_courses = db.relationship('Course', secondary=student_courses, backref='students')
+
+    # Courses created by a teacher (one-to-many)
+    created_courses = db.relationship('Course', backref='teacher', lazy=True)
+    
+    # Roles flag
     is_teacher = db.Column(db.Boolean, default=False)
     is_parent = db.Column(db.Boolean, default=False)
     is_student = db.Column(db.Boolean, default=False)
@@ -105,7 +119,7 @@ class Progress(db.Model):
 
     # Relationships
     student = db.relationship('User', backref='progress_reports', foreign_keys=[student_id])
-    course = db.relationship('Course', backref='progress')
+    course = db.relationship('Course', back_populate='progress')
     teacher = db.relationship('User', backref='teacher_progress', foreign_keys=[teacher_id])
 
     def __repr__(self):
