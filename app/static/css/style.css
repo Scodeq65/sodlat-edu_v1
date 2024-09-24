@@ -1,204 +1,105 @@
-/* General Styles */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-}
-
+/* General body styling */
 body {
-    font-family: 'Open Sans', sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    line-height: 1.6;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: #1a1a1a;
-    margin-bottom: 15px;
-}
-
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
-    flex-grow: 1;
-}
-
-/* Header */
-header {
-    background: #2c3e50;
-    color: #fff;
-    padding-top: 30px;
-    min-height: 70px;
-    border-bottom: #2980b9 3px solid;
-}
-
-header a {
-    color: #fff;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-size: 16px;
-}
-
-header ul {
-    padding: 0;
-    list-style: none;
-}
-
-header ul li {
-    display: inline;
-    padding: 0 20px 0 20px;
-}
-
-header #branding {
-    float: left;
-}
-
-header #branding h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Set a clean, professional font */
+    background-color: #f3f7fb; /* Light background color for readability */
+    color: #333; /* Dark text for good contrast */
     margin: 0;
-    color: #ffffff;
+    padding: 0;
 }
 
-header nav {
-    float: right;
-    margin-top: 10px;
+/* Navbar Styling */
+.navbar {
+    background-color: #1e91e9ec; /* Custom background color for navbar */
 }
 
-/* Forms */
-form {
-    background: #fff;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-   
-}
-
-form .form-group {
-    margin-bottom: 15px;
-}
-
-form .form-label {
-    margin-bottom: 5px;
-    display: block;
+.navbar-brand {
     font-weight: bold;
-    color: #333;
+    color: #ffffff; /* White text for the brand to stand out */
 }
 
-form .form-control {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.navbar-nav .nav-item .nav-link {
+    color: #ffffff; /* White text for navigation links */
 }
 
-form .btn {
-    background: #2980b9;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.navbar-nav .dropdown-menu {
+    background-color: #007bff; /* Blue dropdown background */
+    border: none; /* No border for cleaner look */
 }
 
-form .btn:hover {
-    background: #3498db;
+.navbar-nav .dropdown-item {
+    color: #fff; /* White text for dropdown items */
 }
 
-form .error {
-    color: #e74c3c;
-    font-size: 14px;
+.navbar-nav .dropdown-item:hover {
+    background-color: #f3f0e2; /* Slightly different hover color for better interaction feedback */
 }
 
-/* Buttons */
+/* Footer Styling */
+.footer {
+    background-color: #343a40; /* Dark background for footer */
+    color: #fff; /* White text in footer */
+    padding: 10px; /* Padding for space around footer content */
+}
+
+/* Button Styling */
+.btn-primary, .btn-secondary {
+    border-radius: 50px; /* Rounded buttons for modern look */
+    font-size: 1.1rem; /* Slightly larger text for buttons */
+    padding: 10px 20px; /* Extra padding for more clickable area */
+}
+
 .btn-primary {
-    background: #3498db;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: #0056b3; /* Strong blue for primary buttons */
+    border-color: #0056b3; /* Matching border */
 }
 
 .btn-primary:hover {
-    background: #2980b9;
+    background-color: #003f82; /* Darker hover state */
 }
 
-.btn-danger {
-    background: #e74c3c;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+/* Card Styling */
+.card {
+    border: none; /* Remove default border */
+    border-radius: 15px; /* Rounded corners for a more friendly look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a floating effect */
 }
 
-.btn-danger:hover {
-    background: #c0392b;
+/* Table Styling */
+.table {
+    margin-top: 20px; /* Space above tables */
+    border-collapse: collapse; /* Cleaner look without table borders */
 }
 
-/* Dashboard */
-.dashboard {
-    background: #ecf0f1;
-    padding: 30px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.table th, .table td {
+    text-align: center; /* Center text for easier reading */
+    padding: 12px; /* Padding inside table cells */
+    vertical-align: middle; /* Vertical centering */
 }
 
-.dashboard .dashboard-header {
-    background: #2c3e50;
-    color: #fff;
-    padding: 15px;
-    border-radius: 5px 5px 0 0;
+.table thead th {
+    background-color: #007bff; /* Blue header background */
+    color: #fff; /* White header text */
 }
 
-.dashboard .dashboard-content {
-    padding: 20px;
+/* Jumbotron Styling for Landing Page */
+.jumbotron {
+    background-color: #1e91e9; /* Blue background for jumbotron */
+    color: white; /* White text for contrast */
+    padding: 50px 20px; /* Large padding for a bold, welcoming look */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-.dashboard .dashboard-content ul {
-    list-style: none;
-    padding: 0;
-}
+/* Responsive Design */
+@media (max-width: 767px) {
+    /* On smaller screens, center the nav links */
+    .navbar-nav {
+        text-align: center;
+    }
 
-.dashboard .dashboard-content ul li {
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-/* Footer */
-footer {
-    background: #2c3e50;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    margin-top: auto;
-    flex-shrink: 0;
-}
-
-/* Notifications */
-.notification {
-    background: #3498db;
-    color: #fff;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.notification.error {
-    background: #e74c3c;
-}
-
-.notification.success {
-    background: #2ecc71;
-}
-
-.notification.warning {
-    background: #f39c12;
+    /* Make dropdown menus behave more naturally on mobile */
+    .navbar-nav .dropdown-menu {
+        position: static;
+        float: none;
+    }
 }

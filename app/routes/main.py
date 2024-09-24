@@ -48,7 +48,7 @@ def roles_required(*roles):
     return decorator
 
 @main.route('/')
-@main.route('/index')
+@main.route('/Home')
 def index():
     return render_template('index.html', title='Home')
 
@@ -91,7 +91,7 @@ def parent_dashboard():
             flash(f'An error occurred: {e}', 'danger')
 
     # Fetch linked children and their progress
-    children = User.query.filter_by(parent_id=current_user.id, role='student').all()
+    children = User.query.filter_by(parent_id=current_user.id, is_student=True).all()
     progress = {child.id: Progress.query.filter_by(student_id=child.id).all() for child in children}
 
     return render_template(
@@ -114,7 +114,7 @@ def teacher_dashboard():
     # Handle course creation
     if course_form.validate_on_submit() and 'create_course' in request.form:
         try:
-            new_course = Course(title=course_form.name.data, description=course_form.description.data, teacher_id=current_user.id)
+            new_course = Course(course=course_form.course_name.data, description=course_form.description.data, teacher_id=current_user.id)
             db.session.add(new_course)
             db.session.commit()
             flash('Course created successfully.', 'success')
@@ -126,15 +126,15 @@ def teacher_dashboard():
     # Handle assignment creation
     if assignment_form.validate_on_submit() and 'create_assignment' in request.form:
         try:
-            course = Course.query.get(assignment_form.course_id.data)
-            if not course:
+            course = assignment_form.course_id.data
+            if not course or course.teacher_id != current_user.id:
                 flash('Invalid course selected.', 'danger')
             else:
                 new_assignment = Assignment(
                     title=assignment_form.title.data,
-                    description=assignment_form.content.data,
+                    description=assignment_form.description.data,
                     due_date=assignment_form.due_date.data,
-                    course_id=course.id,
+                    course_id=course.id
                 )
                 db.session.add(new_assignment)
                 db.session.commit()
@@ -147,13 +147,14 @@ def teacher_dashboard():
     # Handle progress creation
     if progress_form.validate_on_submit() and 'create_progress' in request.form:
         student = User.query.filter_by(username=progress_form.student_name.data, role='student').first()
+        course = progress_form.course_id.data
         if not student:
             flash('Student not found.', 'danger')
         else:
             try:
                 new_progress = Progress(
                     student_id=student.id,
-                    course_id=progress_form.course_id.data,
+                    course_id=course.id,
                     grade=progress_form.grade.data,
                     days_present=progress_form.days_present.data,
                     days_absent=progress_form.days_absent.data,
@@ -166,25 +167,6 @@ def teacher_dashboard():
             except SQLAlchemyError:
                 db.session.rollback()
                 flash('An error occurred while recording progress.', 'danger')
-
-    # Handle attendance
-    if attendance_form.validate_on_submit() and 'update_attendance' in request.form:
-        student = User.query.filter_by(username=attendance_form.student_name.data, role='student').first()
-        if student:
-            try:
-                # Update attendance
-                progress = Progress.query.filter_by(student_id=student.id, course_id=attendance_form.course_id.data).first()
-                if progress:
-                    progress.days_present = (progress.days_present or 0) + int(attendance_form.days_present.data)
-                    progress.days_absent = (progress.days_absent or 0) + int(attendance_form.days_absent.data)
-                    db.session.commit()
-                    flash(f"Attendance updated for {student.username}.", 'success')
-                else:
-                    flash('Progress record not found for this student and course.', 'danger')
-            except SQLAlchemyError:
-                db.session.rollback()
-                flash('An error occurred while updating attendance.', 'danger')
-            return redirect(url_for('main.teacher_dashboard'))
 
     # Handle user updates
     if user_form.validate_on_submit() and 'update_user' in request.form:
@@ -239,45 +221,47 @@ def student_dashboard():
     return render_template(
         'student_dashboard.html',
         title='Student Dashboard',
+        enrolled_courses=enrolled_courses,
         assignments=assignments,
         progress=progress
     )
 
-@main.route('/submit_assignment/<int:assignment_id>', methods=['POST'])
+
+@main.route('/submit_assignment/<int:assignment_id>', methods=['GET', 'POST'])
 @login_required
 @roles_required('is_student')
 def submit_assignment(assignment_id):
+    assignment = Assignment.query.get_or_404(assignment_id)
     form = AssignmentSubmissionForm()
 
-    try:
-        if form.validate_on_submit():
-            # Fetch the assignment object
-            assignment = Assignment.query.get_or_404(assignment_id)
-
-            # Handle file upload if present
-            filename = None
-            if form.submission_file.data:
-                filename = save_assignment_file(form.submission_file.data)
-
-            # Create new assignment submission
-            submission = AssignmentSubmission(
-                assignment_id=assignment_id,
+    if form.validate_on_submit():
+        try:
+            filename = save_assignment_file(form.submission_file.data) if form.submission_file.data else None
+            new_submission = AssignmentSubmission(
+                submission_content=form.submission_content.data,
+                submission_file=filename,
                 student_id=current_user.id,
-                submission_content=form.submission.data if hasattr(form, 'submission') else None,  # Adjust based on model
-                submission_file=filename
+                assignment_id=assignment.id
             )
-
-            # Add and commit the submission to the database
-            db.session.add(submission)
+            db.session.add(new_submission)
             db.session.commit()
-            flash('Assignment submitted successfully!', 'success')
+            flash('Assignment submitted successfully.', 'success')
             return redirect(url_for('main.student_dashboard'))
+        except SQLAlchemyError:
+            db.session.rollback()
+            flash('An error occurred while submitting the assignment.', 'danger')
 
-        # Redirect back to the student dashboard if form validation fails
-        flash('Please correct the errors in the form.', 'danger')
-        return redirect(url_for('main.student_dashboard'))
-    
-    except SQLAlchemyError:
-        db.session.rollback()
-        flash('An error occurred while processing your submission.', 'danger')
-        return redirect(url_for('main.student_dashboard'))
+    # Since this form is part of the student dashboard, I render the student_dashboard template directly
+    enrolled_courses = current_user.enrolled_courses
+    assignments = Assignment.query.filter(Assignment.course_id.in_([course.id for course in enrolled_courses])).all()
+    progress = Progress.query.filter_by(student_id=current_user.id).all()
+
+    return render_template(
+        'student_dashboard.html',
+        title='Student Dashboard',
+        form=form,
+        assignment=assignment,
+        enrolled_courses=enrolled_courses,
+        assignments=assignments,
+        progress=progress
+    )

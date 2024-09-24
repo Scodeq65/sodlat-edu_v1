@@ -29,9 +29,7 @@ class User(UserMixin, db.Model):
     # Courses a student is enrolled in (many-to-many)
     enrolled_courses = db.relationship('Course', secondary=student_courses, backref='students')
 
-    # Courses created by a teacher (one-to-many)
-   # created_courses = db.relationship('Course', backref='teacher', lazy=True)
-    
+
     # Roles flag
     is_teacher = db.Column(db.Boolean, default=False)
     is_parent = db.Column(db.Boolean, default=False)
@@ -62,7 +60,7 @@ class User(UserMixin, db.Model):
 class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
+    course = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
@@ -72,7 +70,7 @@ class Course(db.Model):
     assignments = db.relationship('Assignment', back_populates='course', cascade="all, delete")
 
     def __repr__(self):
-        return f"Course('{self.title}')"
+        return f"Course('{self.course}')"
 
 
 class Assignment(db.Model):
@@ -94,6 +92,7 @@ class Assignment(db.Model):
 class AssignmentSubmission(db.Model):
     __tablename__ = 'assignment_submission'
     id = db.Column(db.Integer, primary_key=True)
+    submission_content = db.Column(db.Text, nullable=True)
     submission_file = db.Column(db.String(200), nullable=True)  # File path or URL
     submission_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

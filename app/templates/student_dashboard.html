@@ -1,36 +1,102 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Student Dashboard{% endblock %}
+{% block title %}Student Dashboard - SodLat Edu Solution{% endblock %}
 
 {% block content %}
-<h2>Welcome, {{ current_user.username }}!</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Student Dashboard</h2>
+    <p class="text-center">Welcome, {{ current_user.username }}!</p>
 
-<    <div class="col-md-6">
-    <h4>Your Assignments</h4>
-    <ul>
-        {% for assignment in assignments %}
-        <li>
-            <strong>{{ assignment.title }}</strong> - {{ assignment.description }}<br>
-            Due: {{ assignment.due_date.strftime('%Y-%m-%d') }}<br>
-            <a href="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}" class="btn btn-primary mt-2">Submit Assignment</a>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+    <div class="row g-4">
+        <!-- Enrolled Courses Section -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Your Enrolled Courses</h3>
+                    <ul class="list-group list-group-flush">
+                        {% if enrolled_courses %}
+                            {% for course in enrolled_courses %}
+                                <li class="list-group-item">
+                                    <strong>{{ course.course }}</strong> - {{ course.description }}
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">You are not enrolled in any courses yet.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-<div class="col-md-6">
-    <h4>Your Progress</h4>
-    <ul>
-        {% for progress in progress_reports %}
-        <li>
-            <strong>Course:</strong> {{ progress.course.name }}<br>
-            <strong>Grade:</strong> {{ progress.grade }}<br>
-            <strong>Days Present:</strong> {{ progress.days_present }}<br>
-            <strong>Days Absent:</strong> {{ progress.days_absent }}<br>
-            <strong>Overall Performance:</strong> {{ progress.overall_performance }}
-        </li>
-        {% endfor %}
-    </ul>
-</div>
+        <!-- Assignments Section -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Your Assignments</h3>
+                    <div class="accordion" id="assignmentsAccordion">
+                        {% if assignments %}
+                            {% for assignment in assignments %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ assignment.id }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ assignment.id }}" aria-expanded="false" aria-controls="collapse{{ assignment.id }}">
+                                            {{ assignment.title }} (Due: {{ assignment.due_date.strftime('%Y-%m-%d') }})
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ assignment.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ assignment.id }}" data-bs-parent="#assignmentsAccordion">
+                                        <div class="accordion-body">
+                                            <p><strong>Description:</strong> {{ assignment.description }}</p>
+                                            
+                                            <!-- Assignment Submission Form -->
+                                            <form method="POST" action="{{ url_for('main.submit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
+                                                {{ form.hidden_tag() }}
+
+                                                <div class="mb-3">
+                                                    <label for="submissionContent{{ assignment.id }}" class="form-label">Your Submission</label>
+                                                    {{ form.submission_content(class="form-control", id="submissionContent" ~ assignment.id) }}
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="submissionFile{{ assignment.id }}" class="form-label">Attach File (optional)</label>
+                                                    {{ form.submission_file(class="form-control", id="submissionFile" ~ assignment.id) }}
+                                                </div>
+
+                                                <button type="submit" class="btn btn-primary">Submit Assignment</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="card-text">No assignments available at the moment.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Reports Section -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Your Progress Reports</h3>
+                    <ul class="list-group list-group-flush">
+                        {% if progress %}
+                            {% for report in progress %}
+                                <li class="list-group-item">
+                                    <strong>Course:</strong> {{ report.course.course }}<br>
+                                    <strong>Grade:</strong> {{ report.grade }}<br>
+                                    <strong>Days Present:</strong> {{ report.days_present }}<br>
+                                    <strong>Days Absent:</strong> {{ report.days_absent }}<br>
+                                    <strong>Overall Performance:</strong> {{ report.overall_performance }}
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">No progress reports available yet.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

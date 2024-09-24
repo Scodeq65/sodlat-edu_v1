@@ -1,11 +1,12 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Home | Sodlat Edu Solution{% endblock %}
+{% block title %}Welcome - SodLat Edu Solution{% endblock %}
 
 {% block content %}
 <div class="jumbotron text-center">
-    <h1>Welcome to Sodlat Edu Solution</h1>
-    <p>This platform connects students, parents, and teachers seamlessly.</p>
-    <p>Manage courses, track progress, and handle assignments with ease.</p>
+    <h1>Welcome to SodLat Edu Solution</h1>
+    <p>An all-in-one educational platform for Teachers, Parents, and Students.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
 </div>
 {% endblock %}

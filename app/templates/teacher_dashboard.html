@@ -1,59 +1,152 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Teacher Dashboard{% endblock %}
+{% block title %}Teacher Dashboard - SodLat Edu Solution{% endblock %}
 
 {% block content %}
-<h2>Welcome, {{ current_user.username }}!</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Teacher Dashboard</h2>
+    <p class="text-center">Welcome, {{ current_user.username }}!</p>
 
-<div class="row">
-    <div class="col-md-6">
-        <h4>Create Course</h4>
-        <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
-            {{ course_form.hidden_tag() }}
-            <div class="mb-3">
-                {{ course_form.course_name.label }} {{ course_form.course_name(class="form-control") }}
+    <div class="row g-4">
+        <!-- Create Course Form -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Create a Course</h3>
+                    <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+                        {{ course_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ course_form.course.label(class="form-label") }}
+                            {{ course_form.course(class="form-control", placeholder="Enter course name") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ course_form.description.label(class="form-label") }}
+                            {{ course_form.description(class="form-control", placeholder="Enter course description") }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" name="create_course">Create Course</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Create Course</button>
-        </form>
+        </div>
+
+        <!-- Create Assignment Form -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Create an Assignment</h3>
+                    <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+                        {{ assignment_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ assignment_form.course_id.label(class="form-label") }}
+                            {{ assignment_form.title(class="form-control", placeholder="Enter assignment title") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ assignment_form.description.label(class="form-label") }}
+                            {{ assignment_form.description(class="form-control", placeholder="Enter assignment description") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ assignment_form.due_date.label(class="form-label") }}
+                            {{ assignment_form.due_date(class="form-control", type="date") }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="course_id" class="form-label">Select Course</label>
+                            <select class="form-control" name="course_id">
+                                {% for course in courses %}
+                                    <option value="{{ course.id }}">{{ course.course }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" name="create_assignment">Create Assignment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Record Progress Form -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Record Progress</h3>
+                    <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+                        {{ progress_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ progress_form.student_name.label(class="form-label") }}
+                            {{ progress_form.student_name(class="form-control", placeholder="Enter student name") }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="course_id" class="form-label">Select Course</label>
+                            <select class="form-control" name="course_id">
+                                {% for course in courses %}
+                                    <option value="{{ course.id }}">{{ course.course }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            {{ progress_form.grade.label(class="form-label") }}
+                            {{ progress_form.grade(class="form-control", placeholder="Enter grade") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ progress_form.days_present.label(class="form-label") }}
+                            {{ progress_form.days_present(class="form-control", placeholder="Days present") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ progress_form.days_absent.label(class="form-label") }}
+                            {{ progress_form.days_absent(class="form-control", placeholder="Days absent") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ progress_form.overall_performance.label(class="form-label") }}
+                            {{ progress_form.overall_performance(class="form-control", placeholder="Enter performance") }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" name="create_progress">Record Progress</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-6">
-        <h4>Create Assignment</h4>
-        <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
-            {{ assignment_form.hidden_tag() }}
-            <div class="mb-3">
-                {{ assignment_form.title.label }} {{ assignment_form.title(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ assignment_form.description.label }} {{ assignment_form.description(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ assignment_form.due_date.label }} {{ assignment_form.due_date(class="form-control") }}
-            </div>
-            <button type="submit" class="btn btn-primary">Create Assignment</button>
-        </form>
-    </div>
-</div>
+    <hr class="my-5">
 
-<div class="row mt-4">
-    <div class="col-md-12">
-        <h4>Record Progress</h4>
-        <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
-            {{ progress_form.hidden_tag() }}
-            <div class="mb-3">
-                {{ progress_form.student_name.label }} {{ progress_form.student_name(class="form-control") }}
+    <div class="row g-4">
+        <!-- Update User Information -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title">Update User Information</h3>
+                    <form method="POST" action="{{ url_for('main.teacher_dashboard') }}">
+                        {{ user_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ user_form.username.label(class="form-label") }}
+                            {{ user_form.username(class="form-control", placeholder="Enter new username") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ user_form.email.label(class="form-label") }}
+                            {{ user_form.email(class="form-control", placeholder="Enter new email") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ user_form.password.label(class="form-label") }}
+                            {{ user_form.password(class="form-control", type="password", placeholder="Enter new password") }}
+                        </div>
+                        <div class="form-check">
+                            {{ user_form.is_parent(class="form-check-input", type="radio") }}
+                            {{ user_form.is_parent.label(class="form-check-label") }}
+                        </div>
+                        <div class="form-check">
+                            {{ user_form.is_student(class="form-check-input", type="radio") }}
+                            {{ user_form.is_student.label(class="form-check-label") }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" name="update_user">Update User</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                {{ progress_form.course_id.label }} {{ progress_form.course_id(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ progress_form.grade.label }} {{ progress_form.grade(class="form-control") }}
-            </div>
-            <div class="mb-3">
-                {{ progress_form.days_present.label }} {{ progress_form.days_present(class="form-control") }}
-            </div>
-            <button type="submit" class="btn btn-primary">Record Progress</button>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}
